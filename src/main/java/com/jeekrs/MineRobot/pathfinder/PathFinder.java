@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class PathFinder {
+
     private World world;
     private BlockPos to;
     private PriorityQueue<PathNode> qu;
@@ -23,10 +24,10 @@ public class PathFinder {
     }
 
     private boolean canStand(BlockPos pos) {
-        boolean body = Utils.checkExists(world, pos.up(1));
-        boolean legs = Utils.checkExists(world, pos);
-        boolean ground = Utils.checkExists(world, pos.down(1));
-        return body && legs && ground;
+        boolean body = Utils.checkAccessible(world, pos.up(1));
+        boolean legs = Utils.checkAccessible(world, pos);
+        boolean ground = Utils.checkAccessible(world, pos.down(1));
+        return body && legs && !ground;
     }
 
     private double eval(BlockPos pos, BlockPos to) {
@@ -42,11 +43,14 @@ public class PathFinder {
 
     private void drop(BlockPos pos, PathNode last) {
         // todo keep down with health protect
-        boolean body = Utils.checkExists(world, pos.up(1));
-        boolean legs = Utils.checkExists(world, pos);
-        boolean ground = Utils.checkExists(world, pos.down(1));
-        if(body && legs && !ground)
-        {
+        boolean body = Utils.checkAccessible(world, pos.up(1));
+        boolean legs = Utils.checkAccessible(world, pos);
+        boolean ground = Utils.checkAccessible(world, pos.down(1));
+        if (body && legs && ground) {
+            for (int y = pos.getY() - 1; y > 0; --y)
+                if (!Utils.checkAccessible(world, new BlockPos(pos.getX(), y, pos.getZ()))) {
+                    addOne(new BlockPos(pos.getX(), y + 1, pos.getZ()), last);
+                }
 
         }
     }
@@ -55,26 +59,50 @@ public class PathFinder {
         qu = new PriorityQueue<>();
         vis = new HashSet<>();
 
-        qu.add(new PathNode(from_pos, 0, eval(from_pos, to_pos), null));
+        PathNode best = new PathNode(from_pos, 0, eval(from_pos, to_pos), null);
+        qu.add(best);
         while (!qu.isEmpty()) {
             PathNode node = qu.poll();
-
+            if (node.g < best.g)
+                best = node;
+            if (node.pos == to_pos) {
+                best = node;
+                qu.clear();
+                break;
+            }
             BlockPos up = node.pos.up();
-            addOne(up.north(), node);
-            addOne(up.south(), node);
-            addOne(up.west(), node);
-            addOne(up.east(), node);
+            if (Utils.checkAccessible(world, node.pos.up(2))) {
+                for (int i = -1; i <= 1; ++i)
+                    for (int j = -1; j <= 1; ++j) {
+                        if (i != 0 && j != 0) {
+                            BlockPos pos = up.add(i, 0, j);
+                            if (canStand(pos))
+                                addOne(pos, node);
+                            drop(pos, node);
+                        }
+                    }
+            }
 
-            addOne(node.pos.north(), node);
-            addOne(node.pos.south(), node);
-            addOne(node.pos.west(), node);
-            addOne(node.pos.east(), node);
-            // todo add more directions
+            BlockPos feet = node.pos;
+            for (int i = -2; i <= 2; ++i)
+                for (int j = -2; j <= 2; ++j) {
+                    if (i != 0 && j != 0) {
+                        BlockPos pos = feet.add(i, 0, j);
+                        if (canStand(pos))
+                            addOne(pos, node);
+                        drop(pos, node);
+                    }
+                }
 
         }
 
-        List<PathNode> lst = new ArrayList<>();
-        // todo to complete
+        List<PathNode> lst = new LinkedList<>();
+        PathNode node = best;
+        while (node != null) {
+            lst.add(0, node);
+            node = node.last;
+        }
+
         return lst;
     }
 

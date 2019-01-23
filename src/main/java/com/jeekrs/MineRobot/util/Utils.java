@@ -27,6 +27,10 @@ public class Utils {
     static public boolean checkExists(World world, BlockPos pos) {
         return !world.isAirBlock(pos);
     }
+    static public boolean checkAccessible(World world, BlockPos pos)
+    {
+        return !world.getBlockState(pos).getBlock().isCollidable();
+    }
 
     static public boolean checkExistsOre(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
