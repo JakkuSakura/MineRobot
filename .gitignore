@@ -10,8 +10,8 @@ bin
 out
 *.ipr
 *.iws
-*.iml
-.idea
+# *.iml
+# .idea
 classes
 
 # gradle

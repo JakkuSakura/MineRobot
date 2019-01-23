@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="com.jeekrs.MineRobot.api" target="1.8" />
+      <module name="com.jeekrs.MineRobot.main" target="1.8" />
+      <module name="com.jeekrs.MineRobot.test" target="1.8" />
+      <module name="com.yourname.modid.MineRobot.api" target="1.8" />
+      <module name="com.yourname.modid.MineRobot.main" target="1.8" />
+      <module name="com.yourname.modid.MineRobot.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
