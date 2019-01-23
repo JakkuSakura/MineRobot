@@ -1,0 +1,18 @@
+[
+  {
+    "modid": "mine_robot",
+    "name": "MineRobot",
+    "description": "A Mod of Robot for you to mine without manual operation",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["QiuJiangkun"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": [
+      "[1.9,)"
+    ]
+  }
+]
