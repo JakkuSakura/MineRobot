@@ -2,8 +2,9 @@ package com.jeekrs.MineRobot.listener;
 
 import com.jeekrs.MineRobot.processor.BlockDestroyNode;
 import com.jeekrs.MineRobot.MineRobot;
-import com.jeekrs.MineRobot.processor.BlockEventNode;
+
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -17,7 +18,7 @@ import java.util.List;
 import static com.jeekrs.MineRobot.util.Utils.showMessage;
 
 public class Recorder {
-    final public List<BlockEventNode> queue = new LinkedList<>();
+    final public List<BlockPos> queue = new LinkedList<>();
     static private final int MAX_BLOCK_LIMIT = 100;
 
     @SideOnly(Side.CLIENT)
@@ -29,10 +30,8 @@ public class Recorder {
         if (!event.getWorld().isRemote)
             return;
 
-        // todo check the tool user hold
-        BlockDestroyNode node = new BlockDestroyNode(event.getWorld(), event.getPos(), 100);
-        if (addNode(node))
-            showMessage("Added one");
+        if (addNode(event.getPos()))
+            showMessage("Added one pos");
     }
 
     public void clear() {
@@ -41,19 +40,19 @@ public class Recorder {
 
     public void show() {
         StringBuilder sb = new StringBuilder();
-        for (BlockEventNode e : queue) {
+        for (BlockPos e : queue) {
             sb.append(e);
             sb.append("\n");
         }
         showMessage("Robot: \n" + sb);
     }
 
-    public boolean addNode(BlockEventNode node) {
+    public boolean addNode(BlockPos node) {
         if (queue.isEmpty()) {
             queue.add(node);
             return true;
         } else {
-            BlockEventNode last = queue.get(queue.size() - 1);
+            BlockPos last = queue.get(queue.size() - 1);
             if (!node.equals(last)) {
                 queue.add(node);
                 return true;

@@ -14,6 +14,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.FileNotFoundException;
+import java.util.Locale;
+
 @Mod(modid = MineRobot.MODID, name = MineRobot.NAME, version = MineRobot.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.9,)")
 public class MineRobot {
     public static final String MODID = "mine_robot";
@@ -53,6 +56,8 @@ public class MineRobot {
 
         LOGGER.info("Init scriptEngine");
         scriptEngine = new JythonEngine();
+
+//        Locale.setDefault(new Locale("en", "us"));
     }
 
 }

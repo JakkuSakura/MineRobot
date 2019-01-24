@@ -1,5 +1,8 @@
 package com.jeekrs.MineRobot.processor;
 
+import com.jeekrs.MineRobot.MineRobot;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -11,42 +14,47 @@ import java.util.List;
 import static com.jeekrs.MineRobot.util.Utils.*;
 
 public class Processor {
-
-    final public List<BlockEventNode> execQueue = new LinkedList<>();
+    public BlockEventNode eventNode = null;
 
 
     @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onServerTick(TickEvent.WorldTickEvent event) {
-        if (execQueue.isEmpty()) {
+        if (eventNode == null)
+            return;
+
+        if (!event.world.equals(eventNode.world))
+            return;
+
+        if (!eventNode.started && !eventNode.checkStart()) {
+            eventNode.finished = true;
+            eventNode.successed = false;
+            eventNode = null;
             return;
         }
 
-        BlockEventNode node = execQueue.get(0);
-        if(!event.world.equals(node.world))
-            return;
+        eventNode.started = true;
+        eventNode.work();
 
-        if (!node.checkStart()) {
-            execQueue.remove(node);
-            node.finished = true;
-            return;
-        }
-
-        node.started = true;
-        node.work();
-
-        if (node.checkFinish()) {
-            execQueue.remove(node);
-            node.finished = true;
-            node.finish();
+        if (eventNode.checkFinish()) {
+            eventNode.finished = true;
+            eventNode.successed = true;
+            eventNode.finish();
         }
     }
 
-    public void clear() {
-        execQueue.clear();
+    static public void applyBlockEvent(BlockEventNode node) {
+        // todo a bug here
+        // to test
+        MineRobot.INSTANCE.processor.eventNode = node;
+        try {
+            showMessage("Begin:" + node);
+            while (!node.finished) {
+                Thread.sleep(10);
+            }
+            showMessage("Done:" + node);
+        } catch (InterruptedException ignore) {
+        }
     }
 
-    public void addNode(BlockEventNode node) {
-        execQueue.add(node);
-    }
 }

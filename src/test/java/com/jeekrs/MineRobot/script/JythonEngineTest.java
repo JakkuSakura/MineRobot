@@ -1,3 +1,4 @@
+package com.jeekrs.MineRobot.script;
 import com.jeekrs.MineRobot.script.JythonEngine;
 
 public class JythonEngineTest {

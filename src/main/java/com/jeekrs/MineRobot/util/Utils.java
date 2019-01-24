@@ -37,27 +37,6 @@ public class Utils {
         return OredictUtil.isOre(block);
     }
 
-    static public void applyBlockEvent(BlockEventNode node) {
-        MineRobot.INSTANCE.processor.clear();
-        MineRobot.INSTANCE.processor.addNode(node);
-        try {
-            while (!node.finished) {
-                Thread.sleep(10);
-            }
-        } catch (InterruptedException ignore) {
-        }
-    }
-
-    static public void destoryBlock(World world, BlockPos pos) {
-        BlockEventNode node = new BlockDestroyNode(world, pos, 100);
-        applyBlockEvent(node);
-
-    }
-
-    static public void putBlock(World world, BlockPos pos, String block) {
-        BlockEventNode node = new BlockPutNode(world, pos, block);
-        applyBlockEvent(node);
-    }
 
     static public World getWorld() {
         return Minecraft.getMinecraft().world;
