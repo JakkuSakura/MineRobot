@@ -5,6 +5,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -12,27 +14,9 @@ import java.util.List;
 
 import static CoroUtil.util.CoroUtilPath.tryMoveOneSteopToWardXYZLongDistPlayer;
 
-class Daeman extends Thread {
-    public boolean running = false;
-
-    @Override
-    public void run() {
-        running = true;
-
-        try {
-            while (running && Minecraft.getMinecraft().world != null) {
-                updatePressed();
-                Thread.sleep(10);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-    }
-    private void updatePressed()
-    {
-        if(pressedField != null && nowKeybinding != null)
-        {
+class Daeman {
+    public void updatePressed() {
+        if (pressedField != null && nowKeybinding != null) {
             try {
                 pressedField.set(nowKeybinding, pressed);
             } catch (IllegalAccessException e) {
@@ -46,6 +30,13 @@ class Daeman extends Thread {
     boolean pressed = false;
 
     void pressKey(KeyBinding binding) {
+        pressed = true;
+        if(nowKeybinding == binding)
+        {
+            updatePressed();
+            return;
+        }
+
         nowKeybinding = binding;
         try {
             pressedField = nowKeybinding.getClass().getDeclaredField("pressed");
@@ -53,12 +44,12 @@ class Daeman extends Thread {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        pressed = true;
     }
 
     void releaseKey() {
         pressed = false;
         updatePressed();
+
     }
 }
 
@@ -77,5 +68,10 @@ public class PlayerOperationAgent {
             }
         }).start();
 
+    }
+
+    @SubscribeEvent
+    public static void onServerTick(TickEvent.ServerTickEvent event) {
+        daeman.updatePressed();
     }
 }
