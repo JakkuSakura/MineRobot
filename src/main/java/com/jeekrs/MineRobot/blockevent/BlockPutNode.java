@@ -1,11 +1,17 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.blockevent;
 
+import com.jeekrs.MineRobot.util.ItemUtil;
+import com.jeekrs.MineRobot.util.PlayerUtil;
+import com.jeekrs.MineRobot.util.Utils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.inventory.ClickType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -16,8 +22,8 @@ public class BlockPutNode extends BlockEventNode {
 
     private final BlockPos pos;
     private final String itemName;
-    private ItemStack item;
-    // todo specify itemName/block name
+    private int itemNum;
+    private boolean ok = false;
 
     public BlockPutNode(World world, BlockPos pos, String itemName) {
         super(world);
@@ -27,30 +33,27 @@ public class BlockPutNode extends BlockEventNode {
 
     @Override
     public boolean checkStart() {
-        InventoryPlayer inventory = getMinecraft().player.inventory;
-        for (int i = 0; i < inventory.getSizeInventory(); ++i)
-        {
-            ItemStack is = inventory.getStackInSlot(i);
-            if(is.getDisplayName().equals(itemName))
-            {
-                item = is;
-                return true;
-            }
-        }
-        return false;
+        itemNum = ItemUtil.findIndexInInventory(itemName);
+        if(itemNum >= 0)
+            ItemUtil.changeItem(itemNum);
+        return itemNum >= 0;
     }
 
     @Override
     public boolean checkFinish() {
-        return true;
+        return ok;
     }
 
     @Override
     public void work() {
+        if (!PlayerUtil.testDistance(pos))
+            return;
+
         Minecraft mc = Minecraft.getMinecraft();
-        ItemStack itemstack = item;
+        EntityPlayerSP player = Utils.getEntityPlayer();
+        ItemStack itemstack = player.inventory.getStackInSlot(itemNum);
         BlockPos blockpos = pos;
-        if (mc.world.getBlockState(blockpos).getMaterial() != Material.AIR) {
+        if (mc.world.getBlockState(blockpos).getMaterial() == Material.AIR) {
             int i = itemstack.getCount();
             EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, blockpos, EnumFacing.DOWN, mc.objectMouseOver.hitVec, MAIN_HAND);
             if (enumactionresult == EnumActionResult.SUCCESS) {
@@ -68,11 +71,16 @@ public class BlockPutNode extends BlockEventNode {
             mc.entityRenderer.itemRenderer.resetEquippedProgress(MAIN_HAND);
             return;
         }
-
+        ok = true;
     }
 
     @Override
     public void finish() {
 
+    }
+
+    @Override
+    public String toString() {
+        return "put:" + itemName + " " + pos;
     }
 }

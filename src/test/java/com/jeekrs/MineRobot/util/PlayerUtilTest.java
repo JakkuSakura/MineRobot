@@ -1,6 +1,6 @@
 package com.jeekrs.MineRobot.util;
 
-import com.jeekrs.MineRobot.processor.Navigator;
+import com.jeekrs.MineRobot.pathfinding.Navigator;
 import org.junit.Assert;
 import org.junit.Test;
 

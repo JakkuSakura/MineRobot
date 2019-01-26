@@ -1,4 +1,4 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.blockevent;
 
 import net.minecraft.world.World;
 

@@ -1,14 +1,12 @@
 package com.jeekrs.MineRobot.commands;
 
 import com.jeekrs.MineRobot.MineRobot;
+import com.jeekrs.MineRobot.util.EntityUtil;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import com.jeekrs.MineRobot.util.Utils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.Vec3d;
 
 import static com.jeekrs.MineRobot.util.Utils.showMessage;
 
@@ -39,9 +37,10 @@ public class StartupCommand extends RootCommand {
             MineRobot.INSTANCE.scriptEngine.stop();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
+            Utils.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());
         } else if (args[0].equals("test")) {
             showMessage("started");
-            MineRobot.INSTANCE.pathFinder.startPathfinding(Minecraft.getMinecraft().player, MineRobot.INSTANCE.recorder.lastPos(1));
+            PlayerUtil.attackEntity(EntityUtil.nearestEntity(Utils.getEntityPlayer(), null));
         } else {
             showMessage("You should call with start xxx, stop, or show");
         }

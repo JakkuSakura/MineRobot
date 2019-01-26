@@ -5,6 +5,7 @@ import com.jeekrs.MineRobot.util.Utils;
 import org.python.core.*;
 import org.python.util.PythonInterpreter;
 
+import javax.rmi.CORBA.Util;
 import java.io.File;
 import java.util.Properties;
 
@@ -13,6 +14,10 @@ public class JythonEngine implements ScriptEngine {
     private PythonInterpreter interp;
     private String rootPath = System.getProperty("user.dir") + "/scripts/";
     private Thread thread;
+
+    public Thread getThread() {
+        return thread;
+    }
 
     public JythonEngine() {
         MineRobot.LOGGER.info("Script engine (Jython 2.70) is preparing.");
@@ -39,19 +44,26 @@ public class JythonEngine implements ScriptEngine {
             Utils.showMessage("File not fount: " + path);
             return;
         }
-        interp.execfile(path);
+        try {
+            interp.execfile(path);
+        } catch (Exception e) {
+            Utils.showMessage(e.toString());
+            return;
+        }
+
         PyFunction func = interp.get(method, PyFunction.class);
-        PyObject instance = MineRobot.INSTANCE != null ? PyJavaType.wrapJavaObject(MineRobot.INSTANCE) : Py.None;
-        PyObject[] argList = new PyObject[1 + args.length];
-        argList[0] = instance;
-        for (int i = 1; i <= args.length; ++i)
-            argList[i] = PyString.fromInterned(args[i - 1]);
+        PyObject[] argList = new PyObject[args.length];
+        for (int i = 0; i < args.length; ++i)
+            argList[i] = PyString.fromInterned(args[i]);
+
         thread = new Thread(() -> {
             try {
                 func.__call__(argList);
                 MineRobot.LOGGER.info("method {} finished", method);
             } catch (Exception all) {
                 Utils.showMessage("method " + method + " error: " + all.toString());
+            } finally {
+                thread = null;
             }
         });
         thread.start();

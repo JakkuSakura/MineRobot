@@ -4,12 +4,10 @@ import com.jeekrs.MineRobot.commands.StartupCommand;
 import com.jeekrs.MineRobot.listener.Recorder;
 import com.jeekrs.MineRobot.pathfinding.PathFinder;
 import com.jeekrs.MineRobot.processor.KeyPresser;
-import com.jeekrs.MineRobot.processor.Navigator;
-import com.jeekrs.MineRobot.processor.NodeProcessor;
-import com.jeekrs.MineRobot.processor.ProcessorManager;
+import com.jeekrs.MineRobot.pathfinding.Navigator;
+import com.jeekrs.MineRobot.blockevent.NodeProcessor;
 import com.jeekrs.MineRobot.script.JythonEngine;
 import com.jeekrs.MineRobot.script.ScriptEngine;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +33,6 @@ public class MineRobot {
 
     public Recorder recorder;
     public StartupCommand startupCommand;
-    public ProcessorManager processors = new ProcessorManager();
     public ScriptEngine scriptEngine;
     public NodeProcessor nodeProcessor = new NodeProcessor();
     public KeyPresser keyPresser = new KeyPresser();
@@ -59,12 +56,11 @@ public class MineRobot {
         LOGGER.info("Registered command");
 
         LOGGER.info("Init processors");
-        processors.addProcessor(nodeProcessor);
-        processors.addProcessor(keyPresser);
-        processors.addProcessor(navigator);
-        processors.addProcessor(pathFinder);
+        MinecraftForge.EVENT_BUS.register(nodeProcessor);
+        MinecraftForge.EVENT_BUS.register(keyPresser);
+        MinecraftForge.EVENT_BUS.register(navigator);
+        MinecraftForge.EVENT_BUS.register(pathFinder);
 
-        MinecraftForge.EVENT_BUS.register(processors);
 
         LOGGER.info("Init scriptEngine");
         scriptEngine = new JythonEngine();

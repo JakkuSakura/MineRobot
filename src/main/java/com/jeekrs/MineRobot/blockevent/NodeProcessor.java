@@ -1,31 +1,25 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.blockevent;
 
-import com.jeekrs.MineRobot.MineRobot;
+import com.jeekrs.MineRobot.processor.Processor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import static com.jeekrs.MineRobot.util.Utils.*;
 
 public class NodeProcessor extends Processor {
     public BlockEventNode eventNode = null;
 
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
     @Override
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (eventNode == null)
             return;
 
-        if (eventNode.world != Minecraft.getMinecraft().world)
-            return;
-
-        if (!eventNode.started && !eventNode.checkStart()) {
+        if (eventNode.world != Minecraft.getMinecraft().world || !eventNode.started && !eventNode.checkStart()) {
             eventNode.finished = true;
             eventNode.successed = false;
             eventNode = null;
@@ -39,12 +33,11 @@ public class NodeProcessor extends Processor {
             eventNode.finished = true;
             eventNode.successed = true;
             eventNode.finish();
+            eventNode = null;
         }
     }
 
-    public void applyBlockEvent(BlockEventNode node) {
-        // todo a bug here
-        // to test
+    public void apply(BlockEventNode node) {
         eventNode = node;
         try {
             showMessage("Begin:" + node);

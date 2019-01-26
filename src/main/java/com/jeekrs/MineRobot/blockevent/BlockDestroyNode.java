@@ -1,5 +1,6 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.blockevent;
 
+import com.jeekrs.MineRobot.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -10,12 +11,10 @@ import static net.minecraft.util.EnumFacing.DOWN;
 
 public class BlockDestroyNode extends BlockEventNode {
     public final BlockPos pos;
-    public int left_ticks;
 
-    public BlockDestroyNode(final World world, final BlockPos pos, int left_ticks) {
+    public BlockDestroyNode(final World world, final BlockPos pos) {
         super(world);
         this.pos = pos;
-        this.left_ticks = left_ticks;
     }
 
     @Override
@@ -32,27 +31,30 @@ public class BlockDestroyNode extends BlockEventNode {
 
     @Override
     public boolean checkStart() {
-        return left_ticks > 0 && checkExists(world, pos);
+        return checkExists(world, pos);
     }
 
     @Override
     public boolean checkFinish() {
-        return left_ticks <= 0 || checkExists(world, pos);
+        return !checkExists(world, pos);
     }
 
     @Override
     public void work() {
-        Minecraft.getMinecraft().playerController.onPlayerDamageBlock(pos, DOWN);
+        if(!PlayerUtil.testDistance(pos))
+            return;
 
+        Minecraft.getMinecraft().playerController.onPlayerDamageBlock(pos, DOWN);
         Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(pos, DOWN);
         Minecraft.getMinecraft().player.swingArm(EnumHand.MAIN_HAND);
 
-        left_ticks -= 1;
     }
+
 
     @Override
     public void finish() {
         Minecraft.getMinecraft().playerController.resetBlockRemoving();
+        Minecraft.getMinecraft().player.swingArm(EnumHand.MAIN_HAND);
     }
 
     @Override

@@ -1,6 +1,7 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.pathfinding;
 
 import com.jeekrs.MineRobot.MineRobot;
+import com.jeekrs.MineRobot.processor.Processor;
 import com.jeekrs.MineRobot.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -8,7 +9,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Navigator extends Processor {
     public World world;
@@ -17,23 +21,29 @@ public class Navigator extends Processor {
 
     /**
      * @param player the player
-     * @param pos the target pos
+     * @param pos    the target pos
      * @return arrived
      */
-    public static boolean walkTo(EntityPlayerSP player, BlockPos pos)
-    {
+    public static boolean walkTo(EntityPlayerSP player, BlockPos pos) {
+        if (player.capabilities.isFlying) {
+            MineRobot.INSTANCE.keyPresser.pressKey(Minecraft.getMinecraft().gameSettings.keyBindSneak);
+            return false;
+        } else {
+            MineRobot.INSTANCE.keyPresser.releaseKey(Minecraft.getMinecraft().gameSettings.keyBindSneak);
+        }
+
         double disXZ = getDist(player.posX - (pos.getX() + 0.5), player.posZ - (pos.getZ() + 0.5));
-        if(disXZ < 0.6)
-        {
-            MineRobot.INSTANCE.keyPresser.releaseKey();
+        if (disXZ <= .5) {
+            MineRobot.INSTANCE.keyPresser.releaseKey(Minecraft.getMinecraft().gameSettings.keyBindForward);
             return true;
         }
-        lookAt(player, pos);
+//         it looks strange when walking
+        lookAt(player, pos, player.capabilities.isFlying);
         MineRobot.INSTANCE.keyPresser.pressKey(Minecraft.getMinecraft().gameSettings.keyBindForward);
         return false;
     }
 
-    public static void lookAt(EntityPlayer player, BlockPos pos) {
+    public static void lookAt(EntityPlayer player, BlockPos pos, boolean pitch) {
         if (pos == null || player == null)
             return;
         double delX = player.posX - (pos.getX() + 0.5);
@@ -42,7 +52,13 @@ public class Navigator extends Processor {
         player.rotationYaw = (float) yaw;
         double delY = (player.posY + player.getEyeHeight()) - (pos.getY() + 0.5);
         double dist = getDist(delX, delZ);
-        player.rotationPitch = (float) (MathHelper.atan2(delY, dist) / Math.PI * 180);
+        if (pitch) {
+            player.rotationPitch = (float) (MathHelper.atan2(delY, dist) / Math.PI * 180);
+            // todo this not work when player flying
+        }
+//        else
+//            player.rotationPitch = 0;
+
     }
 
     public static double getDist(double dx, double dz) {
@@ -77,6 +93,8 @@ public class Navigator extends Processor {
         this.callback = callback;
     }
 
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
     @Override
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (target != null) {

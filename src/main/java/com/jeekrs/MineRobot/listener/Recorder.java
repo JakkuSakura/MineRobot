@@ -1,27 +1,19 @@
 package com.jeekrs.MineRobot.listener;
 
-import CoroUtil.util.CoroUtilInventory;
-import CoroUtil.util.CoroUtilItem;
-import com.jeekrs.MineRobot.processor.BlockDestroyNode;
-import com.jeekrs.MineRobot.MineRobot;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.eventhandler.Event;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import static com.jeekrs.MineRobot.util.Utils.getEntityPlayer;
 import static com.jeekrs.MineRobot.util.Utils.showMessage;
 
 public class Recorder {
-    final public List<BlockPos> queue = new LinkedList<>();
+    final public LinkedList<BlockPos> queue = new LinkedList<>();
     public BlockPos lastPos(int n)
     {
         if (queue.isEmpty())

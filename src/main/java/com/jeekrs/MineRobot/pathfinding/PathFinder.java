@@ -3,17 +3,18 @@ package com.jeekrs.MineRobot.pathfinding;
 import com.jeekrs.MineRobot.MineRobot;
 import com.jeekrs.MineRobot.processor.Processor;
 import com.jeekrs.MineRobot.util.BlockUtil;
+import com.jeekrs.MineRobot.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.*;
 
 public class PathFinder extends Processor {
-    private static final double DIRECT_DIS = 4.5;
-    private static final long TICK_LIMIT = 100;
+    private static final double DIRECT_DIS = .8;
     private EntityPlayer player;
-    private BlockPos target;
+    public BlockPos target;
     public boolean running;
     private long tickcount;
     private BlockPos tempTarget;
@@ -25,24 +26,33 @@ public class PathFinder extends Processor {
         this.target = target;
         tempTarget = makeTempTarget();
         toUpdate = true;
-        justifyTarget();
+        justify();
+        running = true;
     }
 
-    private void justifyTarget() {
-        while (target.getY() > 0 && BlockUtil.isPassable(player.world, target))
-            target.down();
-        target.up();
+    private void justify() {
+        target = drop(target);
+    }
+
+    private BlockPos drop(BlockPos pos) {
+        while (pos.getY() > 0 && BlockUtil.isPassable(player.world, pos))
+            pos = pos.down();
+        pos = pos.up();
+        return pos;
     }
 
     @Override
     public void onServerTick(TickEvent.ServerTickEvent event) {
         if (target == null)
             return;
+        if (!running)
+            return;
         ++tickcount;
-        if (tickcount > TICK_LIMIT || player.getDistanceSqToCenter(target) < 2) {
+        if (player.getDistanceSqToCenter(target) < DIRECT_DIS * DIRECT_DIS) {
             target = null;
             toUpdate = false;
             planned = null;
+            tempTarget = null;
             return;
         }
 
@@ -60,8 +70,9 @@ public class PathFinder extends Processor {
     private LinkedList<PathNode> planned;
 
     private BlockPos makeTempTarget() {
-        if (player.getDistanceSqToCenter(target) < DIRECT_DIS)
-            return target;
+        if (target == null)
+            return null;
+
         if (planned == null) {
             PathNode pn = getPath();
             // flatten path
@@ -71,32 +82,51 @@ public class PathFinder extends Processor {
                 pn = pn.father;
             }
         }
-        return Objects.requireNonNull(planned.pollFirst()).pos;
+
+        PathNode a = planned.pollFirst();
+        if (a == null)
+            return null;
+        return a.pos;
 
     }
 
     private PathNode getPath() {
         HashSet<BlockPos> vis = new HashSet<>();
         PriorityQueue<PathNode> qu = new PriorityQueue<>();
-        qu.add(new PathNode(new BlockPos(player), 0, player.getDistanceSqToCenter(target), null));
-        PathNode nearest = null;
+        PathNode nearest = tryAddNode(vis, qu, null, player.getPosition());
+
         while (!qu.isEmpty()) {
             PathNode node = qu.poll();
 
-            if (node.pos.distanceSq(target) < DIRECT_DIS)
-                return node;
-            nearest = node;
+            if (node.guess < nearest.guess)
+                nearest = node;
+
+            if (node.guess < DIRECT_DIS)
+                break;
+
 
             tryAddNode(vis, qu, node, node.pos.west());
             tryAddNode(vis, qu, node, node.pos.east());
             tryAddNode(vis, qu, node, node.pos.north());
             tryAddNode(vis, qu, node, node.pos.south());
+
+            if(BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.south())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.west())))
+                tryAddNode(vis, qu, node, node.pos.south().west());
+            if(BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.south())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.east())))
+                tryAddNode(vis, qu, node, node.pos.south().east());
+            if(BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.north())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.west())))
+                tryAddNode(vis, qu, node, node.pos.north().west());
+            if(BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.north())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.east())))
+                tryAddNode(vis, qu, node, node.pos.north().east());
         }
         return nearest;
     }
 
-    private void tryAddNode(HashSet<BlockPos> vis, PriorityQueue<PathNode> qu, PathNode node, BlockPos west) {
-        checkAndAdd(new PathNode(west, node.walked + 1, west.distanceSq(target), node), qu, vis);
+    private PathNode tryAddNode(HashSet<BlockPos> vis, PriorityQueue<PathNode> qu, PathNode node, BlockPos newpos) {
+        newpos = drop(newpos);
+        PathNode pathNode = new PathNode(newpos, node != null ? node.walked + 1 : 0, Math.sqrt(newpos.distanceSq(target)), node);
+        checkAndAdd(pathNode, qu, vis);
+        return pathNode;
     }
 
     private void checkAndAdd(PathNode node, Queue<PathNode> queue, Set<BlockPos> vis) {

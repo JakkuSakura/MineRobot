@@ -32,9 +32,6 @@ public class BlockUtil {
         return parBlock == parBlock2;
     }
 
-    public static boolean isEqualMaterial(Block parBlock, Material parMaterial) {
-        return parBlock.getMaterial(parBlock.getDefaultState()) == parMaterial;
-    }
 
     public static Block getBlockByName(String name) {
         try {
@@ -57,22 +54,25 @@ public class BlockUtil {
         return block == Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE || block == Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE || block == Blocks.STONE_PRESSURE_PLATE || block == Blocks.WOODEN_PRESSURE_PLATE;
     }
 
-    static public boolean checkExists(World world, BlockPos pos) {
+    public static boolean checkExists(World world, BlockPos pos) {
         return !world.isAirBlock(pos);
     }
 
-    static public boolean isPassable(World world, BlockPos pos) {
+    public static boolean isPassable(World world, BlockPos pos) {
         // it's strange that it do not need it
         // maybe other mods need it
-        return !world.getBlockState(pos).getBlock().isPassable(world, pos);
+        return world.getBlockState(pos).getBlock().isPassable(world, pos);
     }
-    static public boolean isStandible(World world, BlockPos pos)
+    public static boolean isStandible(World world, BlockPos pos)
     {
         return isPassable(world, pos.up()) && isPassable(world, pos) && !isPassable(world, pos.down());
     }
 
-    static public boolean checkExistsOre(World world, BlockPos pos) {
+    public static boolean checkExistsOre(World world, BlockPos pos) {
         Block block = world.getBlockState(pos).getBlock();
         return OredictUtil.isOre(block);
+    }
+    public static int getLightValue(World world, BlockPos pos) {
+        return world.getBlockState(pos).getLightValue(world, pos);
     }
 }

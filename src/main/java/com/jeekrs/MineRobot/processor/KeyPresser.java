@@ -4,54 +4,55 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Field;
+import java.util.TreeSet;
 
-public class KeyPresser extends Processor{
-    public void updatePressed() {
-        if (pressedField != null && nowKeybinding != null) {
-            try {
-                pressedField.set(nowKeybinding, pressed);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+public class KeyPresser extends Processor {
+    private TreeSet<KeyBinding> pressed = new TreeSet<>();
 
-    private Field pressedField;
-    public KeyBinding nowKeybinding;
-    boolean pressed = false;
-
-    public void pressKey(KeyBinding binding) {
-        pressed = true;
-        if (nowKeybinding == binding) {
-            return;
-        }
-
-        nowKeybinding = binding;
+    public KeyPresser() {
         try {
-            pressedField = nowKeybinding.getClass().getDeclaredField("pressed");
+            pressedField = KeyBinding.class.getDeclaredField("pressed");
             pressedField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-    }
-
-    public void update() {
-        if (pressed)
-            updatePressed();
-    }
-
-    public void releaseKey() {
-        pressed = false;
-        updatePressed();
 
     }
 
+
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
     @Override
     public void onServerTick(TickEvent.ServerTickEvent event) {
-        update();
+        try {
+            for (KeyBinding e : pressed)
+                pressedField.set(e, true);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Field pressedField;
+
+    public void pressKey(KeyBinding binding) {
+        pressed.add(binding);
+    }
+
+
+    public void releaseKey(KeyBinding binding) {
+        pressed.remove(binding);
+        try {
+            pressedField.set(binding, false);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 }
