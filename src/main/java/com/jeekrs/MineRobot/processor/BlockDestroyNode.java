@@ -1,12 +1,11 @@
 package com.jeekrs.MineRobot.processor;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import static com.jeekrs.MineRobot.util.Utils.checkExists;
+import static com.jeekrs.MineRobot.util.BlockUtil.checkExists;
 import static net.minecraft.util.EnumFacing.DOWN;
 
 public class BlockDestroyNode extends BlockEventNode {

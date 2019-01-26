@@ -41,13 +41,14 @@ public class JythonEngine implements ScriptEngine {
         }
         interp.execfile(path);
         PyFunction func = interp.get(method, PyFunction.class);
-        PyObject py_pro = MineRobot.INSTANCE != null ? PyJavaType.wrapJavaObject(MineRobot.INSTANCE) : Py.None;
-        PyArray pyArray = new PyArray(PyString.class, args.length);
-        for (String e : args)
-            pyArray.append(PyString.fromInterned(e));
+        PyObject instance = MineRobot.INSTANCE != null ? PyJavaType.wrapJavaObject(MineRobot.INSTANCE) : Py.None;
+        PyObject[] argList = new PyObject[1 + args.length];
+        argList[0] = instance;
+        for (int i = 1; i <= args.length; ++i)
+            argList[i] = PyString.fromInterned(args[i - 1]);
         thread = new Thread(() -> {
             try {
-                func.__call__(py_pro, pyArray);
+                func.__call__(argList);
                 MineRobot.LOGGER.info("method {} finished", method);
             } catch (Exception all) {
                 Utils.showMessage("method " + method + " error: " + all.toString());

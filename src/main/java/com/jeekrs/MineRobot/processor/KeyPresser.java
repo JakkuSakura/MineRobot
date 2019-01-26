@@ -1,6 +1,5 @@
-package com.jeekrs.MineRobot.pathfinding;
+package com.jeekrs.MineRobot.processor;
 
-import com.jeekrs.MineRobot.MineRobot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
@@ -9,12 +8,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
 
-import static CoroUtil.util.CoroUtilPath.tryMoveOneSteopToWardXYZLongDistPlayer;
-
-class Daeman {
+public class KeyPresser extends Processor{
     public void updatePressed() {
         if (pressedField != null && nowKeybinding != null) {
             try {
@@ -29,11 +24,9 @@ class Daeman {
     public KeyBinding nowKeybinding;
     boolean pressed = false;
 
-    void pressKey(KeyBinding binding) {
+    public void pressKey(KeyBinding binding) {
         pressed = true;
-        if(nowKeybinding == binding)
-        {
-            updatePressed();
+        if (nowKeybinding == binding) {
             return;
         }
 
@@ -46,32 +39,19 @@ class Daeman {
         }
     }
 
-    void releaseKey() {
+    public void update() {
+        if (pressed)
+            updatePressed();
+    }
+
+    public void releaseKey() {
         pressed = false;
         updatePressed();
 
     }
-}
 
-public class PlayerOperationAgent {
-    static final public Daeman daeman = new Daeman();
-
-    public static void test() {
-        World world = Minecraft.getMinecraft().world;
-        new Thread(() -> {
-            try {
-                daeman.pressKey(Minecraft.getMinecraft().gameSettings.keyBindForward);
-                Thread.sleep(1000);
-                daeman.releaseKey();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-    }
-
-    @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        daeman.updatePressed();
+    @Override
+    public void onServerTick(TickEvent.ServerTickEvent event) {
+        update();
     }
 }

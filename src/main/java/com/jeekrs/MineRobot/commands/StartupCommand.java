@@ -1,10 +1,14 @@
 package com.jeekrs.MineRobot.commands;
 
 import com.jeekrs.MineRobot.MineRobot;
-import com.jeekrs.MineRobot.pathfinding.PlayerOperationAgent;
+import com.jeekrs.MineRobot.util.PlayerUtil;
+import com.jeekrs.MineRobot.util.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.Vec3d;
 
 import static com.jeekrs.MineRobot.util.Utils.showMessage;
 
@@ -28,14 +32,16 @@ public class StartupCommand extends RootCommand {
             }
         } else if (args[0].equals("stop")) {
             showMessage("Robot is stopped");
-            MineRobot.INSTANCE.processor.clear();
+            if(MineRobot.INSTANCE.nodeProcessor.eventNode != null)
+                MineRobot.INSTANCE.nodeProcessor.eventNode.finished = true;
+            MineRobot.INSTANCE.nodeProcessor.eventNode = null;
             MineRobot.INSTANCE.recorder.clear();
             MineRobot.INSTANCE.scriptEngine.stop();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
         } else if (args[0].equals("test")) {
             showMessage("started");
-            PlayerOperationAgent.test();
+            MineRobot.INSTANCE.pathFinder.startPathfinding(Minecraft.getMinecraft().player, MineRobot.INSTANCE.recorder.lastPos(1));
         } else {
             showMessage("You should call with start xxx, stop, or show");
         }

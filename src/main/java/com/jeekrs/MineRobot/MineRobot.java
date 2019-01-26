@@ -2,9 +2,14 @@ package com.jeekrs.MineRobot;
 
 import com.jeekrs.MineRobot.commands.StartupCommand;
 import com.jeekrs.MineRobot.listener.Recorder;
-import com.jeekrs.MineRobot.processor.Processor;
+import com.jeekrs.MineRobot.pathfinding.PathFinder;
+import com.jeekrs.MineRobot.processor.KeyPresser;
+import com.jeekrs.MineRobot.processor.Navigator;
+import com.jeekrs.MineRobot.processor.NodeProcessor;
+import com.jeekrs.MineRobot.processor.ProcessorManager;
 import com.jeekrs.MineRobot.script.JythonEngine;
 import com.jeekrs.MineRobot.script.ScriptEngine;
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
@@ -13,9 +18,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.io.FileNotFoundException;
-import java.util.Locale;
 
 @Mod(modid = MineRobot.MODID, name = MineRobot.NAME, version = MineRobot.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = "[1.9,)")
 public class MineRobot {
@@ -27,20 +29,25 @@ public class MineRobot {
     // Activated Status (Client Side)
     public static boolean isActivated = false;
 
+
     // for scripts
     public final Logger logger = LOGGER;
 
     public Recorder recorder;
     public StartupCommand startupCommand;
-    public Processor processor;
+    public ProcessorManager processors = new ProcessorManager();
     public ScriptEngine scriptEngine;
-
+    public NodeProcessor nodeProcessor = new NodeProcessor();
+    public KeyPresser keyPresser = new KeyPresser();
+    public Navigator navigator = new Navigator();
+    public PathFinder pathFinder = new PathFinder();
     @Mod.Instance(MODID)
     public static MineRobot INSTANCE;
 
     @SideOnly(Side.CLIENT)
     @Mod.EventHandler
     public void initClient(FMLInitializationEvent event) {
+
         isActivated = true;
         LOGGER.info("Init Recorder");
         recorder = new Recorder();
@@ -51,8 +58,13 @@ public class MineRobot {
         ClientCommandHandler.instance.registerCommand(startupCommand);
         LOGGER.info("Registered command");
 
-        LOGGER.info("Init processor");
-        processor = new Processor();
+        LOGGER.info("Init processors");
+        processors.addProcessor(nodeProcessor);
+        processors.addProcessor(keyPresser);
+        processors.addProcessor(navigator);
+        processors.addProcessor(pathFinder);
+
+        MinecraftForge.EVENT_BUS.register(processors);
 
         LOGGER.info("Init scriptEngine");
         scriptEngine = new JythonEngine();

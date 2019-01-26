@@ -13,48 +13,8 @@ import java.util.List;
 
 import static com.jeekrs.MineRobot.util.Utils.*;
 
-public class Processor {
-    public BlockEventNode eventNode = null;
+abstract public class Processor {
+    public abstract void onServerTick(TickEvent.ServerTickEvent event);
 
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    public void onServerTick(TickEvent.WorldTickEvent event) {
-        if (eventNode == null)
-            return;
-
-        if (!event.world.equals(eventNode.world))
-            return;
-
-        if (!eventNode.started && !eventNode.checkStart()) {
-            eventNode.finished = true;
-            eventNode.successed = false;
-            eventNode = null;
-            return;
-        }
-
-        eventNode.started = true;
-        eventNode.work();
-
-        if (eventNode.checkFinish()) {
-            eventNode.finished = true;
-            eventNode.successed = true;
-            eventNode.finish();
-        }
-    }
-
-    static public void applyBlockEvent(BlockEventNode node) {
-        // todo a bug here
-        // to test
-        MineRobot.INSTANCE.processor.eventNode = node;
-        try {
-            showMessage("Begin:" + node);
-            while (!node.finished) {
-                Thread.sleep(10);
-            }
-            showMessage("Done:" + node);
-        } catch (InterruptedException ignore) {
-        }
-    }
 
 }

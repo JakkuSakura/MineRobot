@@ -6,6 +6,7 @@ import com.jeekrs.MineRobot.processor.BlockEventNode;
 import com.jeekrs.MineRobot.processor.BlockPutNode;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -24,25 +25,12 @@ public class Utils {
             log(s);
     }
 
-    static public boolean checkExists(World world, BlockPos pos) {
-        return !world.isAirBlock(pos);
-    }
-    static public boolean checkAccessible(World world, BlockPos pos)
-    {
-        return !world.getBlockState(pos).getBlock().isCollidable();
-    }
-
-    static public boolean checkExistsOre(World world, BlockPos pos) {
-        Block block = world.getBlockState(pos).getBlock();
-        return OredictUtil.isOre(block);
-    }
-
 
     static public World getWorld() {
         return Minecraft.getMinecraft().world;
     }
 
-    static public EntityPlayer getEntityPlayer() {
+    static public EntityPlayerSP getEntityPlayer() {
         return Minecraft.getMinecraft().player;
     }
 
