@@ -1,9 +1,9 @@
 package com.jeekrs.MineRobot.blockevent;
 
+import com.jeekrs.MineRobot.util.BlockPos;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import static com.jeekrs.MineRobot.util.BlockUtil.checkExists;
@@ -44,8 +44,8 @@ public class BlockDestroyNode extends BlockEventNode {
         if(!PlayerUtil.testDistance(pos))
             return;
 
-        Minecraft.getMinecraft().playerController.onPlayerDamageBlock(pos, DOWN);
-        Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(pos, DOWN);
+        Minecraft.getMinecraft().playerController.onPlayerDamageBlock(pos.toMcPos(), DOWN);
+        Minecraft.getMinecraft().effectRenderer.addBlockHitEffects(pos.toMcPos(), DOWN);
         Minecraft.getMinecraft().player.swingArm(EnumHand.MAIN_HAND);
 
     }

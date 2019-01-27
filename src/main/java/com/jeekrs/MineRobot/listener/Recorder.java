@@ -1,7 +1,7 @@
 package com.jeekrs.MineRobot.listener;
 
+import com.jeekrs.MineRobot.util.BlockPos;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -35,7 +35,7 @@ public class Recorder {
         if(!getEntityPlayer().getHeldItemMainhand().getUnlocalizedName().equals("item.stick"))
             return;
 
-        if (addNode(event.getPos()))
+        if (addNode(new BlockPos(event.getPos())))
             showMessage("Added one pos");
     }
 

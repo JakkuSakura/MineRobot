@@ -1,11 +1,11 @@
 package com.jeekrs.MineRobot.pathfinding;
 
 import com.jeekrs.MineRobot.MineRobot;
+import com.jeekrs.MineRobot.util.BlockPos;
 import com.jeekrs.MineRobot.util.BlockUtil;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import com.jeekrs.MineRobot.util.Utils;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.*;
 
@@ -46,7 +46,7 @@ public class PathFinder extends Thread {
         while (running) {
             if (timeLimit > 0 && System.currentTimeMillis() - begin > timeLimit)
                 break;
-            if (tempTarget == null || player.getDistanceSqToCenter(target) < DIRECT_DIS * DIRECT_DIS) {
+            if (tempTarget == null || player.getDistanceSqToCenter(target.toMcPos()) < DIRECT_DIS * DIRECT_DIS) {
                 target = null;
                 planned = null;
                 tempTarget = null;

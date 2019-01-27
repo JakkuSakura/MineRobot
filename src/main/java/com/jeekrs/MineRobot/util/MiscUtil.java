@@ -8,7 +8,6 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.biome.Biome;
@@ -81,8 +80,8 @@ public class MiscUtil {
 		return bb;
 	}*/
 	
-	public static BlockPos vecToChunkCoords(Vec3 parVec) {
-		return new BlockPos(MathHelper.floor(parVec.xCoord), MathHelper.floor(parVec.yCoord), MathHelper.floor(parVec.zCoord));
+	public static BlockPos vecToChunkCoords(Vec3d parVec) {
+		return new BlockPos(MathHelper.floor(parVec.x), MathHelper.floor(parVec.y), MathHelper.floor(parVec.z));
 	}
 
 	

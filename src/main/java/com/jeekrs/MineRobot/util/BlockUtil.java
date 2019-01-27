@@ -7,7 +7,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class BlockUtil {
@@ -51,13 +50,13 @@ public class BlockUtil {
     }
 
     public static boolean checkExists(World world, BlockPos pos) {
-        return !world.isAirBlock(pos);
+        return !world.isAirBlock(pos.toMcPos());
     }
 
     public static boolean isPassable(World world, BlockPos pos) {
         // it's strange that it do not need it
         // maybe other mods need it
-        return world.getBlockState(pos).getBlock().isPassable(world, pos);
+        return world.getBlockState(pos.toMcPos()).getBlock().isPassable(world, pos.toMcPos());
     }
     public static boolean isStandible(World world, BlockPos pos)
     {
@@ -65,10 +64,10 @@ public class BlockUtil {
     }
 
     public static boolean checkExistsOre(World world, BlockPos pos) {
-        Block block = world.getBlockState(pos).getBlock();
+        Block block = world.getBlockState(pos.toMcPos()).getBlock();
         return OredictUtil.isOre(block);
     }
     public static int getLightValue(World world, BlockPos pos) {
-        return world.getLight(pos);
+        return world.getLight(pos.toMcPos());
     }
 }

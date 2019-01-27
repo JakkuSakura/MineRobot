@@ -6,7 +6,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import static net.minecraft.util.EnumHand.MAIN_HAND;
@@ -47,7 +46,7 @@ public class BlockPutNode extends BlockEventNode {
 
         int backup = InventoryUtil.changeItem(itemNum);
 
-        EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, pos, EnumFacing.UP, mc.objectMouseOver.hitVec, MAIN_HAND);
+        EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, pos.toMcPos(), EnumFacing.UP, mc.objectMouseOver.hitVec, MAIN_HAND);
         if (enumactionresult == EnumActionResult.SUCCESS) {
             mc.player.swingArm(MAIN_HAND);
 

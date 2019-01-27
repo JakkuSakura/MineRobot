@@ -1,6 +1,7 @@
 package com.jeekrs.MineRobot.pathfinding;
 
-import net.minecraft.util.math.BlockPos;
+
+import com.jeekrs.MineRobot.util.BlockPos;
 
 public class PathNode implements Comparable<PathNode> {
 

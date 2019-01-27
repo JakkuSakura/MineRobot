@@ -1,8 +1,8 @@
 package com.jeekrs.MineRobot.miner;
 
+import com.jeekrs.MineRobot.util.BlockPos;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import net.minecraft.util.Rotation;
-import net.minecraft.util.math.BlockPos;
 
 import java.util.LinkedList;
 

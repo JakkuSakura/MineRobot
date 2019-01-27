@@ -1,20 +1,15 @@
 package com.jeekrs.MineRobot.util;
 
-import com.jeekrs.MineRobot.MineRobot;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+
 import net.minecraft.util.math.Vec3d;
 
 public class PlayerUtil {
 
     public static boolean testDistance(BlockPos pos) {
         float distance = Utils.getPlayerController().getBlockReachDistance();
-        return Utils.getEntityPlayer().getDistanceSqToCenter(pos) <= distance * distance;
+        return Utils.getEntityPlayer().getDistanceSqToCenter(pos.toMcPos()) <= distance * distance;
     }
     public static boolean testDistance(Entity pos) {
         float distance = Utils.getPlayerController().getBlockReachDistance();
@@ -27,7 +22,7 @@ public class PlayerUtil {
         if (!entity.canBeAttackedWithItem())
             return false;
 
-        if (testDistance(entity.getPosition())) {
+        if (testDistance(new BlockPos(entity.getPosition()))) {
             Utils.getPlayerController().attackEntity(Utils.getEntityPlayer(), entity);
             return true;
         } else
