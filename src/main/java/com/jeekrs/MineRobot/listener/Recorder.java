@@ -32,7 +32,7 @@ public class Recorder {
             return;
 
         // when user holds compass
-        if(!getEntityPlayer().getHeldItemMainhand().getUnlocalizedName().equals("item.compass"))
+        if(!getEntityPlayer().getHeldItemMainhand().getUnlocalizedName().equals("item.stick"))
             return;
 
         if (addNode(event.getPos()))

@@ -41,7 +41,7 @@ public class PlayerUtil {
     }
 
     public static BlockPos getNowPos() {
-        return Utils.getEntityPlayer().getPosition();
+        return new BlockPos(Utils.getEntityPlayer());
     }
 
     public static Vec3d getFloatPos() {

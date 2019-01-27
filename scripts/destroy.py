@@ -1,6 +1,7 @@
 from com.jeekrs.MineRobot.util import Utils
 from com.jeekrs.MineRobot import MineRobot
 from com.jeekrs.MineRobot.processor import *
+from com.jeekrs.MineRobot.blockevent import *
 def destroy(qu=None):
     if qu is None:
         instance = MineRobot.INSTANCE
@@ -15,4 +16,4 @@ def destroy(qu=None):
 
 def destroy_one(pos):
     instance = MineRobot.INSTANCE
-    instance.nodeProcessor.applyBlockEvent(BlockDestroyNode(Utils.getWorld(), pos))
+    instance.nodeProcessor.apply(BlockDestroyNode(Utils.getWorld(), pos))

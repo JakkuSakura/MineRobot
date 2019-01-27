@@ -1,5 +1,6 @@
 package com.jeekrs.MineRobot.blockevent;
 
+import com.jeekrs.MineRobot.util.BlockUtil;
 import com.jeekrs.MineRobot.util.ItemUtil;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import com.jeekrs.MineRobot.util.Utils;
@@ -34,9 +35,7 @@ public class BlockPutNode extends BlockEventNode {
     @Override
     public boolean checkStart() {
         itemNum = ItemUtil.findIndexInInventory(itemName);
-        if(itemNum >= 0)
-            ItemUtil.changeItem(itemNum);
-        return itemNum >= 0;
+        return itemNum >= 0 && !BlockUtil.checkExists(world, pos);
     }
 
     @Override
@@ -52,26 +51,22 @@ public class BlockPutNode extends BlockEventNode {
         Minecraft mc = Minecraft.getMinecraft();
         EntityPlayerSP player = Utils.getEntityPlayer();
         ItemStack itemstack = player.inventory.getStackInSlot(itemNum);
-        BlockPos blockpos = pos;
-        if (mc.world.getBlockState(blockpos).getMaterial() == Material.AIR) {
-            int i = itemstack.getCount();
-            EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, blockpos, EnumFacing.DOWN, mc.objectMouseOver.hitVec, MAIN_HAND);
-            if (enumactionresult == EnumActionResult.SUCCESS) {
-                mc.player.swingArm(MAIN_HAND);
+        int i = itemstack.getCount();
 
-                if (!itemstack.isEmpty() && (itemstack.getCount() != i || mc.playerController.isInCreativeMode())) {
-                    mc.entityRenderer.itemRenderer.resetEquippedProgress(MAIN_HAND);
-                }
-                return;
+        int backup = ItemUtil.changeItem(itemNum);
+
+        EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, pos, EnumFacing.UP, mc.objectMouseOver.hitVec, MAIN_HAND);
+        if (enumactionresult == EnumActionResult.SUCCESS) {
+            mc.player.swingArm(MAIN_HAND);
+
+            if (!itemstack.isEmpty() && (itemstack.getCount() != i || mc.playerController.isInCreativeMode())) {
+                mc.entityRenderer.itemRenderer.resetEquippedProgress(MAIN_HAND);
             }
-
         }
 
-        if (!itemstack.isEmpty() && mc.playerController.processRightClick(mc.player, mc.world, MAIN_HAND) == EnumActionResult.SUCCESS) {
-            mc.entityRenderer.itemRenderer.resetEquippedProgress(MAIN_HAND);
-            return;
-        }
+        ItemUtil.changeItem(backup);
         ok = true;
+
     }
 
     @Override

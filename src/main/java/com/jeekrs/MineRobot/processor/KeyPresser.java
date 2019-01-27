@@ -45,7 +45,10 @@ public class KeyPresser extends Processor {
         pressed.add(binding);
     }
 
-
+    public void clear() {
+        pressed.clear();
+        KeyBinding.unPressAllKeys();
+    }
     public void releaseKey(KeyBinding binding) {
         pressed.remove(binding);
         try {

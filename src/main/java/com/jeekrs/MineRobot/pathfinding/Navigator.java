@@ -18,6 +18,12 @@ public class Navigator extends Processor {
     public World world;
     public BlockPos target;
     private Runnable callback;
+    public void clean()
+    {
+        world = null;
+        target = null;
+        callback = null;
+    }
 
     /**
      * @param player the player
@@ -33,7 +39,7 @@ public class Navigator extends Processor {
         }
 
         double disXZ = getDist(player.posX - (pos.getX() + 0.5), player.posZ - (pos.getZ() + 0.5));
-        if (disXZ <= .5) {
+        if (disXZ <= 0.9) {
             MineRobot.INSTANCE.keyPresser.releaseKey(Minecraft.getMinecraft().gameSettings.keyBindForward);
             return true;
         }
@@ -85,12 +91,18 @@ public class Navigator extends Processor {
     public void setTarget(World world, BlockPos target) {
         this.world = world;
         this.target = target;
+        callback = null;
+        if(target == null)
+            MineRobot.INSTANCE.keyPresser.releaseKey(Minecraft.getMinecraft().gameSettings.keyBindSneak);
+
     }
 
     public void setTarget(World world, BlockPos target, Runnable callback) {
         this.world = world;
         this.target = target;
         this.callback = callback;
+        if(target == null)
+            MineRobot.INSTANCE.keyPresser.releaseKey(Minecraft.getMinecraft().gameSettings.keyBindSneak);
     }
 
     @SideOnly(Side.CLIENT)

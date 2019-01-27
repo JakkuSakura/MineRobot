@@ -49,14 +49,20 @@ public class ItemUtil {
         return -1;
     }
 
-    public static void changeItem(int index) {
+    public static int changeItem(int index) {
         EntityPlayerSP player = Utils.getEntityPlayer();
         if (index < 9)
+        {
+            int backup = player.inventory.currentItem;
             player.inventory.currentItem = index;
+            return backup;
+        }
         else {
             ItemUtil.windowClick(player.inventoryContainer, index, 0, ClickType.PICKUP, player);
             ItemUtil.windowClick(player.inventoryContainer, player.inventory.currentItem + 36, 0, ClickType.PICKUP, player);
             ItemUtil.windowClick(player.inventoryContainer, index, 0, ClickType.PICKUP, player);
+            return index;
+
         }
     }
 }

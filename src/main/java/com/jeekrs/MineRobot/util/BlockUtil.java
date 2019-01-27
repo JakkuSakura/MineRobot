@@ -21,11 +21,7 @@ public class BlockUtil {
 
     public static boolean isAir(Block parBlock) {
         Material mat = parBlock.getDefaultState().getMaterial();
-        if (mat == Material.AIR) {
-            return true;
-        } else {
-            return false;
-        }
+        return mat == Material.AIR;
     }
 
     public static boolean isEqual(Block parBlock, Block parBlock2) {
@@ -73,6 +69,6 @@ public class BlockUtil {
         return OredictUtil.isOre(block);
     }
     public static int getLightValue(World world, BlockPos pos) {
-        return world.getBlockState(pos).getLightValue(world, pos);
+        return world.getLight(pos);
     }
 }

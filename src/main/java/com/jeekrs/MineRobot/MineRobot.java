@@ -33,7 +33,7 @@ public class MineRobot {
 
     public Recorder recorder;
     public StartupCommand startupCommand;
-    public ScriptEngine scriptEngine;
+    public JythonEngine scriptEngine;
     public NodeProcessor nodeProcessor = new NodeProcessor();
     public KeyPresser keyPresser = new KeyPresser();
     public Navigator navigator = new Navigator();
@@ -59,7 +59,6 @@ public class MineRobot {
         MinecraftForge.EVENT_BUS.register(nodeProcessor);
         MinecraftForge.EVENT_BUS.register(keyPresser);
         MinecraftForge.EVENT_BUS.register(navigator);
-        MinecraftForge.EVENT_BUS.register(pathFinder);
 
 
         LOGGER.info("Init scriptEngine");

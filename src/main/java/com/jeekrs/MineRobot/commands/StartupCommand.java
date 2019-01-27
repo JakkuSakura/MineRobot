@@ -1,6 +1,7 @@
 package com.jeekrs.MineRobot.commands;
 
 import com.jeekrs.MineRobot.MineRobot;
+import com.jeekrs.MineRobot.util.BlockUtil;
 import com.jeekrs.MineRobot.util.EntityUtil;
 import com.jeekrs.MineRobot.util.PlayerUtil;
 import com.jeekrs.MineRobot.util.Utils;
@@ -18,7 +19,7 @@ public class StartupCommand extends RootCommand {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 1 || args[0].equals("help")) {
-            showMessage("You should call with start xxx, stop, or show");
+            showMessage("You should call with start xxx, stop, reload or show");
         } else if (args[0].equals("start")) {
             showMessage("Robot is started");
             if (args.length - 2 >= 0) {
@@ -35,14 +36,17 @@ public class StartupCommand extends RootCommand {
             MineRobot.INSTANCE.nodeProcessor.eventNode = null;
             MineRobot.INSTANCE.recorder.clear();
             MineRobot.INSTANCE.scriptEngine.stop();
+            MineRobot.INSTANCE.navigator.clean();
+            MineRobot.INSTANCE.keyPresser.clear();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
             Utils.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());
-        } else if (args[0].equals("test")) {
-            showMessage("started");
-            PlayerUtil.attackEntity(EntityUtil.nearestEntity(Utils.getEntityPlayer(), null));
+            Utils.showMessage("Lightness: " + BlockUtil.getLightValue(Utils.getWorld(), PlayerUtil.getNowPos()));
+        }else if (args[0].equals("reload")) {
+            showMessage("reloading");
+            MineRobot.INSTANCE.scriptEngine.reload();
         } else {
-            showMessage("You should call with start xxx, stop, or show");
+            showMessage("You should call with start xxx, stop, reload or show");
         }
 
     }
