@@ -58,8 +58,8 @@ public class BlockUtil {
         // maybe other mods need it
         return world.getBlockState(pos.toMcPos()).getBlock().isPassable(world, pos.toMcPos());
     }
-    public static boolean isStandible(World world, BlockPos pos)
-    {
+
+    public static boolean isStandible(World world, BlockPos pos) {
         return isPassable(world, pos.up()) && isPassable(world, pos) && !isPassable(world, pos.down());
     }
 
@@ -67,6 +67,7 @@ public class BlockUtil {
         Block block = world.getBlockState(pos.toMcPos()).getBlock();
         return OredictUtil.isOre(block);
     }
+
     public static int getLightValue(World world, BlockPos pos) {
         return world.getLight(pos.toMcPos());
     }
