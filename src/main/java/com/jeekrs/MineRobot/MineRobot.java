@@ -28,7 +28,6 @@ public class MineRobot {
     public StartupCommand startupCommand;
     public JythonEngine scriptEngine;
     public NodeProcessor nodeProcessor = new NodeProcessor();
-    public KeyPresser keyPresser = new KeyPresser();
 
     @Mod.Instance(MODID)
     public static MineRobot INSTANCE;
@@ -49,8 +48,6 @@ public class MineRobot {
 
         LOGGER.info("Init processors");
         MinecraftForge.EVENT_BUS.register(nodeProcessor);
-        MinecraftForge.EVENT_BUS.register(keyPresser);
-
 
         LOGGER.info("Init scriptEngine");
         scriptEngine = new JythonEngine();

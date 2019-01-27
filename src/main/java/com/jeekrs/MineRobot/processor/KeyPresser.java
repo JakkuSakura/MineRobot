@@ -1,49 +1,63 @@
 package com.jeekrs.MineRobot.processor;
 
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.lang.reflect.Field;
 import java.util.TreeSet;
 
-public class KeyPresser extends Processor {
+/**
+ * Usage: use as daemon or just call work() when you need it
+ */
+public class KeyPresser extends Thread {
     private TreeSet<KeyBinding> pressed = new TreeSet<>();
-
-    public KeyPresser() {
+    private boolean running;
+    static private Field pressedField;
+    static {
         try {
             pressedField = KeyBinding.class.getDeclaredField("pressed");
             pressedField.setAccessible(true);
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-
     }
 
-
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    @Override
-    public void onServerTick(TickEvent.ServerTickEvent event) {
+    public void work() {
         try {
-            for (KeyBinding e : pressed)
+            for (KeyBinding e : pressed) {
                 pressedField.set(e, true);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            }
+        } catch (IllegalAccessException e1) {
+            e1.printStackTrace();
         }
     }
 
-    private Field pressedField;
+    @Override
+    public void run() {
+        try {
+            running = true;
+            while (running) {
+                work();
+                Thread.sleep(10);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            running = true;
+        }
+    }
+
 
     public void pressKey(KeyBinding binding) {
         pressed.add(binding);
     }
 
+    public void terminate() {
+        running = false;
+        clear();
+    }
+
     public void clear() {
-        pressed.clear();
-        KeyBinding.unPressAllKeys();
+        pressed.forEach(this::releaseKey);
     }
 
     public void releaseKey(KeyBinding binding) {

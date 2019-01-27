@@ -1,6 +1,5 @@
 package com.jeekrs.MineRobot.pathfinding;
 
-import com.jeekrs.MineRobot.MineRobot;
 import com.jeekrs.MineRobot.processor.KeyPresser;
 import com.jeekrs.MineRobot.util.*;
 import net.minecraft.client.Minecraft;
@@ -21,6 +20,7 @@ public class PathFinder extends Thread {
     public long timeLimit = -1;
     private LinkedList<PathNode> planned;
     public boolean tip;
+    private KeyPresser keyPresser = new KeyPresser();
 
     public PathFinder(EntityPlayer player, BlockPos target, boolean tip) {
         this.player = player;
@@ -47,20 +47,15 @@ public class PathFinder extends Thread {
         while (running && tempTarget != null) {
             if (timeLimit > 0 && System.currentTimeMillis() - begin > timeLimit)
                 break;
-//            if (tempTarget == null || player.getDistanceSqToCenter(target.toMcPos()) < DIRECT_DIS * DIRECT_DIS) {
-//                target = null;
-//                planned = null;
-//                tempTarget = null;
-//                break;
-//            }
             if (walkToward(tempTarget)) {
                 tempTarget = makeTempTarget();
             }
-            Utils.delay(100);
+            keyPresser.work();
+            if (tempTarget != null)
+                Utils.delay(50);
         }
-
         running = false;
-
+        keyPresser.clear();
     }
 
     /**
@@ -68,13 +63,12 @@ public class PathFinder extends Thread {
      * @param pos    the target pos
      * @return arrived
      */
-    public static boolean walkToward(BlockPos pos) {
+    public boolean walkToward(BlockPos pos) {
         if (pos == null)
             return true;
         GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
         EntityPlayerSP player = Utils.getEntityPlayer();
         KeyBinding keyBindSneak = gameSettings.keyBindSneak;
-        KeyPresser keyPresser = MineRobot.INSTANCE.keyPresser;
 
         if (player.capabilities.isFlying) {
             keyPresser.pressKey(keyBindSneak);
@@ -83,10 +77,11 @@ public class PathFinder extends Thread {
             keyPresser.releaseKey(keyBindSneak);
         }
 
-        double dis = getDist(player.posX - (pos.getX() + 0.5),player.posY - (pos.getY()), player.posZ - (pos.getZ() + 0.5));
+        double dis = getDist(player.posX - (pos.getX() + 0.5), player.posY - (pos.getY()), player.posZ - (pos.getZ() + 0.5));
         KeyBinding keyBindForward = gameSettings.keyBindForward;
         if (dis <= DIRECT_DIS) {
-            keyPresser.releaseKey(keyBindForward);
+//            keyPresser.releaseKey(keyBindForward);
+//            avoid unnecessary stop
             return true;
         }
 //         it looks strange when walking

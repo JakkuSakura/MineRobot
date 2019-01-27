@@ -24,7 +24,7 @@ public class AutoMine {
         for (int i = 0; i < num; ++i) {
             addLine(dis, nowpos, face_front, qu);
             nowpos = nowpos.add(new BlockPos(face_front.getX() * dis, face_front.getY() * dis, face_front.getZ() * dis));
-            addLine(length, nowpos, face_front, qu);
+
             addLine(length, nowpos, face_left, qu);
             addLine(length, nowpos, face_right, qu);
 

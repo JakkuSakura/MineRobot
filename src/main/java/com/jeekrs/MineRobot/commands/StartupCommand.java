@@ -33,7 +33,6 @@ public class StartupCommand extends RootCommand {
             MineRobot.INSTANCE.nodeProcessor.eventNode = null;
             MineRobot.INSTANCE.recorder.clear();
             MineRobot.INSTANCE.scriptEngine.stop();
-            MineRobot.INSTANCE.keyPresser.clear();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
             LogUtil.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());

@@ -17,7 +17,7 @@ class AutoMiner:
     def run(self):
         while not self.qu.isEmpty():
             e = self.qu.pollFirst()
-            if not BlockUtil.isPassable(Utils.getWorld(), e):
+            if not BlockUtil.isPassable(Utils.getWorld(), e) or not BlockUtil.isPassable(Utils.getWorld(), e.up()):
                 walkto.walkto(e.getX(), e.getY(), e.getZ(), tip=True)
                 destroy.destroy_one(e)
                 # noinspection PyTypeChecker
@@ -44,5 +44,5 @@ class AutoMiner:
             self.qu.add(0, pos.east())
 
 
-def automine(dis=3, length=64, num=50):
+def automine(dis=3, length=10, num=20):
     AutoMiner(dis, length, num).run()
