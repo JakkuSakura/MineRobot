@@ -1,6 +1,5 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
-import CoroUtil.forge.CULog;
 import com.google.common.collect.Lists;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
@@ -17,7 +16,7 @@ import net.minecraft.world.biome.Biome;
 import java.util.Collection;
 import java.util.List;
 
-public class CoroUtilMisc {
+public class MiscUtil {
 
 	public static void faceEntity(Entity entToRotate, Entity par1Entity, float par2, float par3)
     {
@@ -136,9 +135,9 @@ public class CoroUtilMisc {
 
                 if (found) {
                     if (totalWeight == 0) {
-                        CULog.log("Detected issue for entity(s)" + str);
-                        CULog.log("Biome '" + biome.getBiomeName() + "' for EnumCreatureType '" + type.name() + "', SpawnListEntry size: " + list.size());
-                        CULog.log("Clearing relevant spawnableList to fix issue");
+                        LogUtil.log("Detected issue for entity(s)" + str);
+                        LogUtil.log("Biome '" + biome.getBiomeName() + "' for EnumCreatureType '" + type.name() + "', SpawnListEntry size: " + list.size());
+                        LogUtil.log("Clearing relevant spawnableList to fix issue");
                         //detected crashable state of data, clear out spawnlist then
                         if (type == EnumCreatureType.MONSTER) {
                             biome.getSpawnableList(EnumCreatureType.MONSTER).clear();

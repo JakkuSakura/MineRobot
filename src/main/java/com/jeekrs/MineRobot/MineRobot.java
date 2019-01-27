@@ -27,10 +27,6 @@ public class MineRobot {
     // Activated Status (Client Side)
     public static boolean isActivated = false;
 
-
-    // for scripts
-    public final Logger logger = LOGGER;
-
     public Recorder recorder;
     public StartupCommand startupCommand;
     public JythonEngine scriptEngine;

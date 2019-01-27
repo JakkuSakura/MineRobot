@@ -1,4 +1,4 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 public enum EnumSpawnPlacementType
     {

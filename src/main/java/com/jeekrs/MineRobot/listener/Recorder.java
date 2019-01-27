@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.LinkedList;
 
 import static com.jeekrs.MineRobot.util.Utils.getEntityPlayer;
-import static com.jeekrs.MineRobot.util.Utils.showMessage;
+import static com.jeekrs.MineRobot.util.LogUtil.showMessage;
 
 public class Recorder {
     final public LinkedList<BlockPos> queue = new LinkedList<>();

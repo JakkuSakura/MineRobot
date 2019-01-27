@@ -1,15 +1,12 @@
 package com.jeekrs.MineRobot.commands;
 
 import com.jeekrs.MineRobot.MineRobot;
-import com.jeekrs.MineRobot.util.BlockUtil;
-import com.jeekrs.MineRobot.util.EntityUtil;
-import com.jeekrs.MineRobot.util.PlayerUtil;
-import com.jeekrs.MineRobot.util.Utils;
+import com.jeekrs.MineRobot.util.*;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
-import static com.jeekrs.MineRobot.util.Utils.showMessage;
+import static com.jeekrs.MineRobot.util.LogUtil.showMessage;
 
 public class StartupCommand extends RootCommand {
     public StartupCommand() {
@@ -40,8 +37,8 @@ public class StartupCommand extends RootCommand {
             MineRobot.INSTANCE.keyPresser.clear();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
-            Utils.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());
-            Utils.showMessage("Lightness: " + BlockUtil.getLightValue(Utils.getWorld(), PlayerUtil.getNowPos()));
+            LogUtil.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());
+            LogUtil.showMessage("Lightness: " + BlockUtil.getLightValue(Utils.getWorld(), PlayerUtil.getNowPos()));
         }else if (args[0].equals("reload")) {
             showMessage("reloading");
             MineRobot.INSTANCE.scriptEngine.reload();

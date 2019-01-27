@@ -1,8 +1,8 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 import net.minecraft.world.World;
 
-public class CoroUtilWorldTime {
+public class WorldTimeUtil {
 
     /**
      * Use instead of hardcoded so we can reroute to any day length changing mods for compat

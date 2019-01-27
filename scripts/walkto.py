@@ -4,7 +4,7 @@ from com.jeekrs.MineRobot.pathfinding import PathFinder
 from net.minecraft.client import Minecraft
 from net.minecraft.util.math import BlockPos
 from net.minecraft.client.settings import KeyBinding
-
+from com.jeekrs.MineRobot.util import LogUtil
 def walkto(x=None, y=None, z=None, tip=True):
     instance = MineRobot.INSTANCE
     if x is None:
@@ -12,7 +12,7 @@ def walkto(x=None, y=None, z=None, tip=True):
     else:
         to_pos = BlockPos(int(x), int(y), int(z))
     if tip:
-        Utils.showMessage('Will go to ' + to_pos.toString())
+        LogUtil.showMessage('Will go to ' + to_pos.toString())
 
     instance.pathFinder.setTarget(Minecraft.getMinecraft().player, to_pos)
     instance.pathFinder.run()
@@ -20,4 +20,4 @@ def walkto(x=None, y=None, z=None, tip=True):
     # instance.keyPresser.clear()
     # instance.navigator.clean()
     if tip:
-        Utils.showMessage("Arrived " + to_pos.toString())
+        LogUtil.showMessage("Arrived " + to_pos.toString())

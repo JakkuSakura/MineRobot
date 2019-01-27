@@ -1,4 +1,4 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;

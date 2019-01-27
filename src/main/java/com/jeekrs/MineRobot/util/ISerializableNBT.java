@@ -1,4 +1,4 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 import net.minecraft.nbt.NBTTagCompound;
 

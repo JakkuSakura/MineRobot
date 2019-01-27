@@ -1,22 +1,14 @@
 package com.jeekrs.MineRobot.blockevent;
 
-import com.jeekrs.MineRobot.util.BlockUtil;
-import com.jeekrs.MineRobot.util.ItemUtil;
-import com.jeekrs.MineRobot.util.PlayerUtil;
-import com.jeekrs.MineRobot.util.Utils;
-import net.minecraft.block.material.Material;
+import com.jeekrs.MineRobot.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import static net.minecraft.client.Minecraft.getMinecraft;
 import static net.minecraft.util.EnumHand.MAIN_HAND;
 
 public class BlockPutNode extends BlockEventNode {
@@ -53,7 +45,7 @@ public class BlockPutNode extends BlockEventNode {
         ItemStack itemstack = player.inventory.getStackInSlot(itemNum);
         int i = itemstack.getCount();
 
-        int backup = ItemUtil.changeItem(itemNum);
+        int backup = InventoryUtil.changeItem(itemNum);
 
         EnumActionResult enumactionresult = mc.playerController.processRightClickBlock(mc.player, mc.world, pos, EnumFacing.UP, mc.objectMouseOver.hitVec, MAIN_HAND);
         if (enumactionresult == EnumActionResult.SUCCESS) {
@@ -64,7 +56,7 @@ public class BlockPutNode extends BlockEventNode {
             }
         }
 
-        ItemUtil.changeItem(backup);
+        InventoryUtil.changeItem(backup);
         ok = true;
 
     }

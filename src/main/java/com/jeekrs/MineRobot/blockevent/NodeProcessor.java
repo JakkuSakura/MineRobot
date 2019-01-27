@@ -1,13 +1,12 @@
 package com.jeekrs.MineRobot.blockevent;
 
 import com.jeekrs.MineRobot.processor.Processor;
+import com.jeekrs.MineRobot.util.LogUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import static com.jeekrs.MineRobot.util.Utils.*;
 
 public class NodeProcessor extends Processor {
     public BlockEventNode eventNode = null;
@@ -40,11 +39,11 @@ public class NodeProcessor extends Processor {
     public void apply(BlockEventNode node) {
         eventNode = node;
         try {
-            showMessage("Begin:" + node);
+            LogUtil.showMessage("Begin:" + node);
             while (!node.finished) {
                 Thread.sleep(10);
             }
-            showMessage("Done:" + node);
+            LogUtil.showMessage("Done:" + node);
         } catch (InterruptedException ignore) {
         }
     }

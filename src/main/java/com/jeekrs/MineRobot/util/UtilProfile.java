@@ -1,6 +1,5 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
-import CoroUtil.forge.CULog;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import net.minecraft.client.Minecraft;
@@ -98,7 +97,7 @@ public class UtilProfile implements Runnable {
 
     public void tryToAddProfileToLookupQueue(GameProfile profile) {
         if (!listProfileRequests.contains(profile.getName())) {
-            CULog.dbg("requesting data for: " + profile.getName());
+            LogUtil.dbg("requesting data for: " + profile.getName());
             listProfileRequests.add(profile.getName());
 
             if (thread == null || thread.getState() == Thread.State.TERMINATED) {
@@ -115,7 +114,7 @@ public class UtilProfile implements Runnable {
 
             //this does more than just get uuid, needs to run every time
             profile = TileEntitySkull.updateGameprofile(profile);
-            CULog.dbg("got updated profile for " + originalLookupName + " (" + profile.getName() + ")" + ", uuid: " + profile.getId());
+            LogUtil.dbg("got updated profile for " + originalLookupName + " (" + profile.getName() + ")" + ", uuid: " + profile.getId());
 
             //make sure network or cache got what it needed
             if (profile != null) {
@@ -126,11 +125,11 @@ public class UtilProfile implements Runnable {
                 Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> map = minecraft.getSkinManager().loadSkinFromCache(profile);
                 MinecraftProfileTexture.Type type = MinecraftProfileTexture.Type.SKIN;
                 if (map.containsKey(type)){
-                    CULog.dbg("set temp data to load from gl context");
+                    LogUtil.dbg("set temp data to load from gl context");
                     data.setTemp(map.get(type));
                 } else {
                     //happens if a bad name is used, eg one with spaces
-                    CULog.dbg("error getting profile texture map data for name " + originalLookupName);
+                    LogUtil.dbg("error getting profile texture map data for name " + originalLookupName);
                 }
 
                 //add either way to mark it was tried

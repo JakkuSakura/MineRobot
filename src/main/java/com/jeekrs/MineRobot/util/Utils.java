@@ -19,19 +19,6 @@ public class Utils {
         }
     }
 
-    public static void log(String s) {
-        MineRobot.LOGGER.info(s);
-    }
-
-    public static void showMessage(String s) {
-        //noinspection ConstantConditions
-        if(Minecraft.getMinecraft() != null && Minecraft.getMinecraft().player != null)
-            Minecraft.getMinecraft().player.sendMessage(new TextComponentString(s));
-        else
-            log(s);
-    }
-
-
     public static World getWorld() {
         return Minecraft.getMinecraft().world;
     }

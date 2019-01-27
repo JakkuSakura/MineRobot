@@ -1,11 +1,11 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 import org.lwjgl.util.vector.Quaternion;
 
 /**
  * Created by corosus on 29/05/17.
  */
-public class CoroUtilMath {
+public class MathUtil {
 
     final static double EPS = 0.000001;
 
@@ -33,18 +33,6 @@ public class CoroUtilMath {
 
     public static double cosFromSin(double sin, double angle) {
         return Math.sin(angle + 1.5707963267948966D);
-        /*if(Options.FASTMATH) {
-            return Math.sin(angle + 1.5707963267948966D);
-        } else {
-            double cos = sqrt(1.0D - sin * sin);
-            double a = angle + 1.5707963267948966D;
-            double b = a - (double)((int)(a / 6.283185307179586D)) * 6.283185307179586D;
-            if(b < 0.0D) {
-                b += 6.283185307179586D;
-            }
-
-            return b >= 3.141592653589793D?-cos:cos;
-        }*/
     }
 
     /**

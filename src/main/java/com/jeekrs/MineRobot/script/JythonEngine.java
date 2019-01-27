@@ -1,12 +1,10 @@
 package com.jeekrs.MineRobot.script;
 
-import akka.japi.pf.FI;
 import com.jeekrs.MineRobot.MineRobot;
-import com.jeekrs.MineRobot.util.Utils;
+import com.jeekrs.MineRobot.util.LogUtil;
 import org.python.core.*;
 import org.python.util.PythonInterpreter;
 
-import javax.rmi.CORBA.Util;
 import java.io.File;
 import java.util.Properties;
 
@@ -35,10 +33,10 @@ public class JythonEngine implements ScriptEngine {
 
         thread = new Thread(() -> {
             try {
-                Utils.showMessage("Run method " + method);
+                LogUtil.showMessage("Run method " + method);
                 String path = rootPath + File.separator + method + ".py";
                 if (!new File(path).exists()) {
-                    Utils.showMessage("File not fount: " + path);
+                    LogUtil.showMessage("File not fount: " + path);
                     return;
                 }
 
@@ -50,9 +48,9 @@ public class JythonEngine implements ScriptEngine {
                     argList[i] = PyString.fromInterned(args[i]);
 
                 func.__call__(argList);
-                Utils.showMessage("method " + method + " finished");
+                LogUtil.showMessage("method " + method + " finished");
             } catch (Exception all) {
-                Utils.showMessage("method " + method + " error: " + all.toString());
+                LogUtil.showMessage("method " + method + " error: " + all.toString());
                 all.printStackTrace();
             } finally {
                 thread = null;

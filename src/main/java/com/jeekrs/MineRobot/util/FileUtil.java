@@ -1,4 +1,4 @@
-package CoroUtil.util;
+package com.jeekrs.MineRobot.util;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.io.IOUtils;
 
-public class CoroUtilFile {
+public class FileUtil {
 	public static String lastWorldFolder = "";
     
 	public static NBTTagCompound getExtraWorldNBT(String fileName) {
@@ -36,7 +36,7 @@ public class CoroUtilFile {
 			try {
 				data = CompressedStreamTools.readCompressed(new FileInputStream(saveFolder + fileName));
 			} catch (Exception ex) {
-				System.out.println("CoroUtilFile: getExtraWorldNBT: Error loading " + saveFolder + fileName);
+				System.out.println("FileUtil: getExtraWorldNBT: Error loading " + saveFolder + fileName);
 			}
 			
 			//NBTTagList var14 = gameData.getTagList("playerData");
