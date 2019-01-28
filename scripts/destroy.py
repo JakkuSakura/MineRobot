@@ -1,9 +1,13 @@
 from com.jeekrs.MineRobot.util import Utils
 from com.jeekrs.MineRobot.util import LogUtil
 from com.jeekrs.MineRobot import MineRobot
-from com.jeekrs.MineRobot.processor import *
 from com.jeekrs.MineRobot.blockevent import *
-def destroy(qu=None):
+from com.jeekrs.MineRobot.blockevent import NodeProcessor
+
+
+processor = NodeProcessor()
+
+def destroy(qu=None, limit=-1):
     if qu is None:
         instance = MineRobot.INSTANCE
         qu = instance.recorder.queue
@@ -15,6 +19,9 @@ def destroy(qu=None):
     else:
         destroy_one(qu)
 
-def destroy_one(pos):
-    instance = MineRobot.INSTANCE
-    instance.nodeProcessor.apply(BlockDestroyNode(Utils.getWorld(), pos))
+
+
+def destroy_one(pos, limit=-1):
+    processor.timeLimit = limit
+    processor.setNode(BlockDestroyNode(Utils.getWorld(), pos))
+    return processor.work()

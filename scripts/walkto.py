@@ -4,7 +4,7 @@ from com.jeekrs.MineRobot.pathfinding import PathFinder
 from com.jeekrs.MineRobot.util import LogUtil
 from com.jeekrs.MineRobot.util import BlockPos
 from com.jeekrs.MineRobot.pathfinding import PathFinder
-def walkto(x=None, y=None, z=None, tip=True):
+def walkto(x=None, y=None, z=None, eps=.5, tip=True):
     instance = MineRobot.INSTANCE
     if x is None:
         to_pos = instance.recorder.lastPos(1)
@@ -12,5 +12,6 @@ def walkto(x=None, y=None, z=None, tip=True):
         to_pos = BlockPos(int(x), int(y), int(z))
 
     pf = PathFinder(Utils.getEntityPlayer(), to_pos, tip)
+    pf.find_eps = float(eps)
     pf.run()
 

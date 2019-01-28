@@ -1,6 +1,6 @@
 package com.jeekrs.MineRobot.pathfinding;
 
-import com.jeekrs.MineRobot.processor.KeyPresser;
+import com.jeekrs.MineRobot.util.KeyPresser;
 import com.jeekrs.MineRobot.util.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -10,10 +10,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.MathHelper;
 
 import java.util.*;
-
 public class PathFinder extends Thread {
-    private static final double DIRECT_DIS = .5;
     private EntityPlayer player;
+    public double find_eps = .5;
+    public double walk_eps = .5;
     public BlockPos target;
     private BlockPos tempTarget;
     public boolean running;
@@ -24,19 +24,21 @@ public class PathFinder extends Thread {
 
     public PathFinder(EntityPlayer player, BlockPos target, boolean tip) {
         this.player = player;
-        this.target = drop(target);
+        this.target = drop(target, true);
         this.tip = tip;
         planned = null;
         tempTarget = makeTempTarget();
-        timeLimit = -1;
 
     }
 
-    private BlockPos drop(BlockPos pos) {
-        while (pos.getY() > 0 && BlockUtil.isPassable(player.world, pos))
-            pos = pos.down();
-        pos = pos.up();
-        return pos;
+    private BlockPos drop(BlockPos pos, boolean raise) {
+        BlockPos apos = pos;
+        while (apos.getY() > 0 && BlockUtil.isPassable(player.world, apos))
+            apos = apos.down();
+
+        if (raise || pos.getY() > apos.getY())
+            apos = apos.up();
+        return apos;
     }
 
     @Override
@@ -66,6 +68,9 @@ public class PathFinder extends Thread {
     public boolean walkToward(BlockPos pos) {
         if (pos == null)
             return true;
+        if (!BlockUtil.isStandible(Utils.getWorld(), pos))
+            return true;
+
         GameSettings gameSettings = Minecraft.getMinecraft().gameSettings;
         EntityPlayerSP player = Utils.getEntityPlayer();
         KeyBinding keyBindSneak = gameSettings.keyBindSneak;
@@ -79,7 +84,7 @@ public class PathFinder extends Thread {
 
         double dis = getDist(player.posX - (pos.getX() + 0.5), player.posY - (pos.getY()), player.posZ - (pos.getZ() + 0.5));
         KeyBinding keyBindForward = gameSettings.keyBindForward;
-        if (dis <= DIRECT_DIS) {
+        if (dis <= walk_eps) {
 //            keyPresser.releaseKey(keyBindForward);
 //            avoid unnecessary stop
             return true;
@@ -145,56 +150,62 @@ public class PathFinder extends Thread {
     private PathNode getPath() {
         HashSet<BlockPos> vis = new HashSet<>();
         PriorityQueue<PathNode> qu = new PriorityQueue<>();
-        PathNode nearest = tryAddNode(vis, qu, null, PlayerUtil.getNowPos());
+        PathNode nearest = new PathNode(PlayerUtil.getNowPos(), 0, getDist(target.getX(), target.getY(), target.getZ()), null);
+        vis.add(nearest.pos);
+        qu.add(nearest);
 
         while (!qu.isEmpty()) {
             PathNode node = qu.poll();
 
+            if (node.guess < find_eps) {
+                // accessible
+                return node;
+            }
             if (node.guess < nearest.guess)
                 nearest = node;
-
-            if (node.guess < DIRECT_DIS)
-                break;
 
             if (qu.size() > 2000)
                 break;
 
 
-            tryAddNode(vis, qu, node, node.pos.west());
-            tryAddNode(vis, qu, node, node.pos.east());
-            tryAddNode(vis, qu, node, node.pos.north());
-            tryAddNode(vis, qu, node, node.pos.south());
+            // todo support walking directly
 
-            if (BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.south())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.west())))
-                tryAddNode(vis, qu, node, node.pos.south().west());
-            if (BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.south())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.east())))
-                tryAddNode(vis, qu, node, node.pos.south().east());
-            if (BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.north())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.west())))
-                tryAddNode(vis, qu, node, node.pos.north().west());
-            if (BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.north())) && BlockUtil.isPassable(Utils.getWorld(), drop(node.pos.east())))
-                tryAddNode(vis, qu, node, node.pos.north().east());
+            BlockPos pos = node.pos;
+            tryAddNode(vis, qu, node, drop(pos.west(), false));
+            tryAddNode(vis, qu, node, drop(pos.east(), false));
+            tryAddNode(vis, qu, node, drop(pos.north(), false));
+            tryAddNode(vis, qu, node, drop(pos.south(), false));
+
+            boolean blockOnHead = !BlockUtil.isPassable(Utils.getWorld(), pos.up(2));
+            if (!blockOnHead) {
+                BlockPos upper = pos.up();
+                tryAddNode(vis, qu, node, upper.west());
+                tryAddNode(vis, qu, node, upper.east());
+                tryAddNode(vis, qu, node, upper.north());
+                tryAddNode(vis, qu, node, upper.south());
+            }
+
         }
         return nearest;
     }
 
-    private PathNode tryAddNode(HashSet<BlockPos> vis, PriorityQueue<PathNode> qu, PathNode node, BlockPos newpos) {
-        if (!BlockUtil.isPassable(Utils.getWorld(), newpos.up()))
-            return null;
-        newpos = drop(newpos);
-        PathNode pathNode = new PathNode(newpos, node != null ? node.walked + 1 : 0, Math.sqrt(newpos.distanceSq(target)), node);
-        checkAndAdd(pathNode, qu, vis);
-        return pathNode;
-    }
-
-    private void checkAndAdd(PathNode node, Queue<PathNode> queue, Set<BlockPos> vis) {
-        if (!BlockUtil.isStandible(player.world, node.pos))
+    private void tryAddNode(HashSet<BlockPos> vis, PriorityQueue<PathNode> qu, PathNode node, BlockPos pos) {
+        if (!BlockUtil.isStandible(Utils.getWorld(), pos))
             return;
-
-        if (!vis.contains(node.pos)) {
-            vis.add(node.pos);
-            queue.add(node);
+        boolean blockOnHead = !BlockUtil.isPassable(Utils.getWorld(), node.pos.up(2));
+        if (blockOnHead && pos.getY() > node.pos.getY())
+            return;
+        if (!vis.contains(pos)) {
+            vis.add(pos);
+            qu.add(new PathNode(pos, node.walked + getVal(pos, node.pos), Math.sqrt(pos.distanceSq(target)), node));
         }
     }
+
+    private double getVal(BlockPos newpos, BlockPos pos) {
+        int ydis = Math.abs(newpos.getY() - pos.getY());
+        return getDist(newpos.getX() - pos.getX(), newpos.getZ() - pos.getZ()) + (ydis < 4 ? 0 : ydis * 2);
+    }
+
 
     /**
      * calc yaw of two delta

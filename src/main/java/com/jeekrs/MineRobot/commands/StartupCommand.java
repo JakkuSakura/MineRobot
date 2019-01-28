@@ -28,18 +28,12 @@ public class StartupCommand extends RootCommand {
             }
         } else if (args[0].equals("stop")) {
             showMessage("Robot is stopped");
-            if(MineRobot.INSTANCE.nodeProcessor.eventNode != null)
-                MineRobot.INSTANCE.nodeProcessor.eventNode.finished = true;
-            MineRobot.INSTANCE.nodeProcessor.eventNode = null;
             MineRobot.INSTANCE.recorder.clear();
             MineRobot.INSTANCE.scriptEngine.stop();
         } else if (args[0].equals("show")) {
             MineRobot.INSTANCE.recorder.show();
             LogUtil.showMessage(Utils.getEntityPlayer().getHeldItemMainhand().getItem().getUnlocalizedName());
             LogUtil.showMessage("Lightness: " + BlockUtil.getLightValue(Utils.getWorld(), PlayerUtil.getNowPos()));
-        }else if (args[0].equals("reload")) {
-            showMessage("reloading");
-            MineRobot.INSTANCE.scriptEngine.reload();
         } else {
             showMessage("You should call with start xxx, stop, reload or show");
         }

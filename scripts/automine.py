@@ -18,11 +18,14 @@ class AutoMiner:
         while not self.qu.isEmpty():
             e = self.qu.pollFirst()
             if not BlockUtil.isPassable(Utils.getWorld(), e) or not BlockUtil.isPassable(Utils.getWorld(), e.up()):
-                walkto.walkto(e.getX(), e.getY(), e.getZ(), tip=True)
-                destroy.destroy_one(e)
+                walkto.walkto(e.getX(), PlayerUtil.getNowPos().getY(), e.getZ(), eps=1, tip=True)
+                while not destroy.destroy_one(e.up(), 5000):
+                    pass
+                while not destroy.destroy_one(e, 5000):
+                    pass
+
                 # noinspection PyTypeChecker
                 self.find(e)
-                destroy.destroy_one(e.up())
                 self.find(e.up())
 
             my_pos = PlayerUtil.getNowPos()

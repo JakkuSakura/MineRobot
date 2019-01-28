@@ -3,7 +3,6 @@ package com.jeekrs.MineRobot;
 import com.jeekrs.MineRobot.blockevent.NodeProcessor;
 import com.jeekrs.MineRobot.commands.StartupCommand;
 import com.jeekrs.MineRobot.listener.Recorder;
-import com.jeekrs.MineRobot.processor.KeyPresser;
 import com.jeekrs.MineRobot.script.JythonEngine;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;

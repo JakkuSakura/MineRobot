@@ -18,6 +18,6 @@ public class PathNode implements Comparable<PathNode> {
     }
     @Override
     public int compareTo(PathNode pathNode) {
-        return Double.compare(walked + guess * 0.9, pathNode.walked + guess * 0.9);
+        return Double.compare(walked + guess, pathNode.walked + guess);
     }
 }

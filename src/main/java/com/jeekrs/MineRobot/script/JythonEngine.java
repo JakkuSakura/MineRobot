@@ -2,16 +2,19 @@ package com.jeekrs.MineRobot.script;
 
 import com.jeekrs.MineRobot.MineRobot;
 import com.jeekrs.MineRobot.util.LogUtil;
+import org.jline.utils.Log;
 import org.python.core.*;
 import org.python.util.PythonInterpreter;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 
 public class JythonEngine implements ScriptEngine {
     private PythonInterpreter interp;
-    private String rootPath = System.getProperty("user.dir") + File.separator + "scripts";
+    private String rootPath;
     private Thread thread;
 
     public Thread getThread() {
@@ -19,23 +22,29 @@ public class JythonEngine implements ScriptEngine {
     }
 
     public JythonEngine() {
-        MineRobot.LOGGER.info("Script engine (Jython 2.70) is preparing.");
+        LogUtil.log("Script engine (Jython 2.70) is preparing.");
+
+        rootPath = new File(System.getProperty("user.dir")).getParent();
+        List<File> allFiles = FileFinder.getAllFiles(new ArrayList<>(), rootPath, "scripts");
+        if (allFiles.isEmpty())
+            throw new RuntimeException("Cannot locate scripts path");
+
+        rootPath = allFiles.get(0).getAbsolutePath();
+        LogUtil.log("Root path is " + rootPath);
+
         Properties props = new Properties();
         props.put("python.home", rootPath);
         props.put("python.console.encoding", "UTF-8");
-        props.put("python.security.respectJavaAccessibility", "false");
+        props.put("python.security.respectJavaAccessibility", "true");
         props.put("python.import.site", "false");
+        PySystemState.initialize(null, props, new String[0]);
 
-        Properties preprops = System.getProperties();
-        PythonInterpreter.initialize(preprops, props, new String[0]);
 
         PySystemState sys = Py.getSystemState();
         sys.path.append(new PyString(rootPath));
+
         interp = new PythonInterpreter(null, sys);
-
-
-        MineRobot.LOGGER.info("Script engine is ready.");
-        MineRobot.LOGGER.info("Root path is {}", rootPath);
+        LogUtil.log("Script engine is ready.");
     }
 
     @Override
@@ -62,10 +71,13 @@ public class JythonEngine implements ScriptEngine {
                 LogUtil.showMessage("method " + method + " finished");
             } catch (ThreadDeath e) {
                 LogUtil.showMessage("method " + method + " stopped");
-                // todo
             } catch (Exception all) {
-                LogUtil.showMessage("method " + method + " error: " + all.toString());
-                all.printStackTrace();
+                if (all.getCause() instanceof ThreadDeath)
+                    LogUtil.showMessage("method " + method + " stopped");
+                else {
+                    LogUtil.showMessage("method " + method + " error: " + all.toString());
+                    all.printStackTrace();
+                }
             } finally {
                 thread = null;
             }
@@ -81,17 +93,7 @@ public class JythonEngine implements ScriptEngine {
         // i don't know how to do
     }
 
-    public void reload() {
-        if (interp != null) {
-//            interp.exec("import sys\n" +
-//                    "sys.modules.clear()");
-            interp.exec("import sys\n" +
-                    "if globals().has_key('init_modules'):\n" +
-                    "\tfor m in [x for x in sys.modules.keys() if x not in init_modules]:\n" +
-                    "\t\tdel(sys.modules[m]) \n" +
-                    "else:\n" +
-                    "\tinit_modules = sys.modules.keys()");
-        }
-    }
+    // about reload:
+    // please use reload(module)
 
 }

@@ -21,10 +21,7 @@ public class BlockDestroyNode extends BlockEventNode {
     public boolean equals(Object obj) {
         if (obj instanceof BlockDestroyNode) {
             BlockDestroyNode node = (BlockDestroyNode) obj;
-            if (world.equals(node.world))
-                if (pos.equals(node.pos))
-                    return true;
-            return false;
+            return world.equals(node.world) && pos.equals(node.pos);
         }
         return false;
     }

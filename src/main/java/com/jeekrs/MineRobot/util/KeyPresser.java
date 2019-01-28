@@ -1,4 +1,4 @@
-package com.jeekrs.MineRobot.processor;
+package com.jeekrs.MineRobot.util;
 
 import net.minecraft.client.settings.KeyBinding;
 

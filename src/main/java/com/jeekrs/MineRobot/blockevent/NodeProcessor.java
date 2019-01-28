@@ -1,51 +1,38 @@
 package com.jeekrs.MineRobot.blockevent;
 
-import com.jeekrs.MineRobot.processor.Processor;
 import com.jeekrs.MineRobot.util.LogUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class NodeProcessor extends Processor {
+public class NodeProcessor extends Thread {
     public BlockEventNode eventNode = null;
+    public long timeLimit = -1;
 
-    @SideOnly(Side.CLIENT)
-    @SubscribeEvent
-    @Override
-    public void onServerTick(TickEvent.ServerTickEvent event) {
-        if (eventNode == null)
-            return;
-
-        if (eventNode.world != Minecraft.getMinecraft().world || !eventNode.started && !eventNode.checkStart()) {
-            eventNode.finished = true;
-            eventNode.successed = false;
-            eventNode = null;
-            return;
-        }
-
-        eventNode.started = true;
-        eventNode.work();
-
-        if (eventNode.checkFinish()) {
-            eventNode.finished = true;
-            eventNode.successed = true;
-            eventNode.finish();
-            eventNode = null;
-        }
+    public void setNode(BlockEventNode node) {
+        eventNode = node;
     }
 
-    public void apply(BlockEventNode node) {
-        eventNode = node;
+    @Override
+    public void run() {
+
+    }
+    public boolean work() {
         try {
-            LogUtil.showMessage("Begin:" + node);
-            while (!node.finished) {
-                Thread.sleep(10);
+            long begin = System.currentTimeMillis();
+            LogUtil.showMessage("Begin: " + eventNode);
+            if (eventNode.checkStart()) {
+                while (!eventNode.checkFinish()) {
+                    eventNode.work();
+                    Thread.sleep(10);
+                    if (timeLimit > 0 && System.currentTimeMillis() - begin > timeLimit) {
+                        LogUtil.showMessage("Error: " + eventNode);
+                        return false;
+                    }
+                }
+                eventNode.finish();
+                LogUtil.showMessage("Done: " + eventNode);
             }
-            LogUtil.showMessage("Done:" + node);
         } catch (InterruptedException ignore) {
         }
+        return true;
     }
 
 }
