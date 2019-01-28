@@ -13,12 +13,13 @@ public class KeyPresser extends Thread {
     private boolean running;
     static private Field pressedField;
     static {
-        try {
-            pressedField = KeyBinding.class.getDeclaredField("pressed");
-            pressedField.setAccessible(true);
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        }
+        Field[] fields = KeyBinding.class.getDeclaredFields();
+        for (Field f : fields)
+            if(f.getType().equals(boolean.class))
+                pressedField = f;
+//            pressedField = KeyBinding.class.getDeclaredField("pressed");
+//              this won't work on MC Client
+        pressedField.setAccessible(true);
     }
 
     public void work() {

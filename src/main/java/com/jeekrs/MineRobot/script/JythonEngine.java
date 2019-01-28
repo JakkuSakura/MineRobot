@@ -24,12 +24,13 @@ public class JythonEngine implements ScriptEngine {
     public JythonEngine() {
         LogUtil.log("Script engine (Jython 2.70) is preparing.");
 
-        rootPath = new File(System.getProperty("user.dir")).getParent();
-        List<File> allFiles = FileFinder.getAllFiles(new ArrayList<>(), rootPath, "scripts");
-        if (allFiles.isEmpty())
-            throw new RuntimeException("Cannot locate scripts path");
+        rootPath = System.getProperty("user.dir") + File.separator + "scripts";
 
-        rootPath = allFiles.get(0).getAbsolutePath();
+        if (!new File(rootPath).exists()) {
+            rootPath = new File(System.getProperty("user.dir")).getParent() + File.separator + "scripts";
+            if (!new File(rootPath).exists())
+                throw new RuntimeException("Cannot locate scripts path");
+        }
         LogUtil.log("Root path is " + rootPath);
 
         Properties props = new Properties();
